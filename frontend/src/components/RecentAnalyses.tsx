@@ -25,9 +25,7 @@ export function RecentAnalyses({
   currentWallet,
 }: RecentAnalysesProps) {
   const [expanded, setExpanded] = useState(true)
-  const [filterMode, setFilterMode] = useState<FilterMode>(
-    currentWallet ? "mine" : "public"
-  )
+  const [filterMode, setFilterMode] = useState<FilterMode>("mine")
 
   // "Mine" filter — show only analyses where the locally-known submitter
   // matches the currently connected wallet address (case-insensitive).
