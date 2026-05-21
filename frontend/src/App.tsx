@@ -128,7 +128,7 @@ export default function App() {
 
           {selected && (
             <div ref={resultRef}>
-              <AnalysisResult analysis={selected} />
+              <AnalysisResult analysis={selected} currentWallet={wallet.address} />
             </div>
           )}
 

@@ -10,9 +10,10 @@ import "./AnalysisResult.css"
 
 interface AnalysisResultProps {
   analysis: AnalysisResultData
+  currentWallet?: string | null
 }
 
-export function AnalysisResult({ analysis }: AnalysisResultProps) {
+export function AnalysisResult({ analysis, currentWallet }: AnalysisResultProps) {
   const dangerFlags = useMemo(
     () => parseDangerFlags(analysis.danger_flags),
     [analysis.danger_flags]
@@ -23,7 +24,7 @@ export function AnalysisResult({ analysis }: AnalysisResultProps) {
   const isCritical = risk === "Critical"
 
   function handleShare() {
-    const riskLabel = analysis.hidden_risk_level || "Unknown"
+    const risk = analysis.hidden_risk_level || "Unknown"
     const type = analysis.document_type || "document"
     const manip = analysis.manipulation_score
     const disagree = analysis.validator_disagreement
@@ -32,16 +33,32 @@ export function AnalysisResult({ analysis }: AnalysisResultProps) {
       ? truncateForTweet(analysis.human_explanation, 140)
       : ""
 
+    // Determine if the connected wallet is the same one that submitted
+    // this analysis. If not, share text uses third-person framing so
+    // attribution stays honest.
+    const isOwnAnalysis =
+      !!currentWallet &&
+      !!analysis.submitter &&
+      currentWallet.toLowerCase() === analysis.submitter.toLowerCase()
+
+    const opening = isOwnAnalysis
+      ? `Just ran a ${type} through ClauseLens.`
+      : `Found this on ClauseLens — an AI forensic analysis of a ${type}.`
+
+    const closing = isOwnAnalysis
+      ? `On-chain consensus by GenLayer validators.`
+      : `On-chain consensus by GenLayer validators. Verify it yourself or run your own analysis.`
+
     const shareText = [
-      `Just ran a ${type} through ClauseLens.`,
+      opening,
       "",
-      `Risk: ${riskLabel.toUpperCase()}`,
+      `Risk: ${risk.toUpperCase()}`,
       `Manipulation: ${manip}/100`,
       `Validator disagreement: ${disagree}/100`,
       "",
       summary ? `"${summary}"` : "",
       "",
-      `On-chain consensus by GenLayer validators.`,
+      closing,
       `${APP_PUBLIC_URL}`,
     ]
       .filter(Boolean)
