@@ -1,0 +1,85 @@
+:root {
+  /* Surfaces */
+  --bg-base: #0d0d18;
+  --bg-elevated: #15152400;
+  --bg-elevated-solid: #161628;
+  --bg-card: #1c1c30;
+  --bg-card-hover: #232340;
+  --bg-input: #0f0f1c;
+
+  /* Primary accent */
+  --accent: #7c5cff;
+  --accent-hover: #9479ff;
+  --accent-dim: #7c5cff33;
+  --accent-glow: #7c5cff66;
+
+  /* Secondary accent */
+  --accent-2: #00e5d1;
+  --accent-2-dim: #00e5d133;
+
+  /* Signal colors */
+  --danger: #ff5470;
+  --danger-dim: #ff547033;
+  --warning: #ffb547;
+  --warning-dim: #ffb54733;
+  --safe: #2fe89e;
+  --safe-dim: #2fe89e33;
+
+  /* Risk levels */
+  --risk-low: #2fe89e;
+  --risk-medium: #ffb547;
+  --risk-high: #ff8a5b;
+  --risk-critical: #ff5470;
+
+  /* Text — BRIGHTER overall for readability against dark glass */
+  --text-primary: #f4f4ff;
+  --text-secondary: #b8b8d4;
+  --text-tertiary: #8a8aac;
+  --text-on-accent: #ffffff;
+
+  /* Borders */
+  --border: #2a2a44;
+  --border-strong: #3a3a5c;
+  --border-accent: #7c5cff55;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(124, 92, 255, 0.45);
+  --shadow-glow-cyan: 0 0 32px rgba(0, 229, 209, 0.35);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 72px;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 480ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-layers */
+  --z-base: 1;
+  --z-elevated: 10;
+  --z-sticky: 100;
+  --z-modal: 1000;
+}

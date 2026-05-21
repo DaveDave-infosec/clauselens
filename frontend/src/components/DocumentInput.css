@@ -1,0 +1,390 @@
+.cl-glass {
+  background:
+    linear-gradient(180deg, rgba(28, 28, 48, 0.55), rgba(22, 22, 40, 0.55));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 24px 48px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(124, 92, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.cl-glass::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  pointer-events: none;
+}
+
+.cl-input {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.cl-input::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-2) 70%, transparent);
+  opacity: 0.85;
+  z-index: 1;
+}
+
+.cl-input__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cl-input__title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.cl-input__subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.cl-input__disclaimer {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  line-height: 1.55;
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(124, 92, 255, 0.05);
+  border-left: 2px solid var(--border-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.cl-input__disclaimer > span {
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cl-input__textarea-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cl-input__textarea {
+  width: 100%;
+  background: rgba(10, 10, 20, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  resize: vertical;
+  min-height: 220px;
+  transition: border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.cl-input__textarea:focus {
+  border-color: var(--accent);
+  background: rgba(8, 8, 16, 0.8);
+  box-shadow:
+    0 0 0 4px rgba(124, 92, 255, 0.12),
+    0 0 32px rgba(124, 92, 255, 0.08) inset;
+}
+
+.cl-input__textarea::placeholder {
+  color: rgba(184, 184, 212, 0.65);
+  font-family: var(--font-sans);
+  font-style: italic;
+}
+
+.cl-input__textarea--over {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(255, 84, 112, 0.12);
+}
+
+.cl-input__textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cl-input__caret {
+  display: none;
+}
+
+.cl-input__counter-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cl-input__counter-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(124, 92, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cl-input__counter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: 2px;
+  transition: width var(--transition-base);
+  box-shadow: 0 0 8px rgba(124, 92, 255, 0.4);
+}
+
+.cl-input__counter-fill--over {
+  background: var(--danger);
+}
+
+.cl-input__counter {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.cl-input__counter--over {
+  color: var(--danger);
+}
+
+.cl-input__presets-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cl-input__presets-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.cl-input__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.cl-input__clear {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(15, 15, 28, 0.7);
+  border: 1px solid var(--border);
+  padding: 4px var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.cl-input__clear:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-dim);
+}
+
+.cl-chip {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: rgba(28, 28, 48, 0.5);
+  border: 1px solid var(--border);
+  padding: 6px var(--space-3);
+  border-radius: 999px;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+  backdrop-filter: blur(6px);
+}
+
+.cl-chip:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.15);
+}
+
+.cl-chip--active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.cl-input__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.cl-input__btn-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.cl-input__pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--accent);
+  pointer-events: none;
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+.cl-input__pulse-ring--2 {
+  animation-delay: 1.2s;
+}
+
+.cl-btn--analyze {
+  background: linear-gradient(135deg, var(--accent), #9479ff 50%, #00e5d1 200%);
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  color: var(--text-on-accent);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  letter-spacing: -0.005em;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(124, 92, 255, 0.3),
+    0 0 0 1px rgba(124, 92, 255, 0.3) inset;
+  transition: all var(--transition-base), background-position 600ms ease;
+}
+
+.cl-btn--analyze:not(:disabled):hover {
+  transform: translateY(-2px);
+  background-position: 100% 50%;
+  box-shadow:
+    0 14px 36px rgba(124, 92, 255, 0.5),
+    0 0 60px rgba(124, 92, 255, 0.4),
+    0 0 0 1px rgba(124, 92, 255, 0.5) inset;
+}
+
+.cl-btn--analyze:disabled {
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.25), rgba(0, 229, 209, 0.15));
+  color: rgba(244, 244, 255, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 255, 0.3) inset,
+    0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+}
+
+.cl-btn--analyze::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 60%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform var(--transition-slow);
+}
+
+.cl-btn--analyze:not(:disabled):hover::after {
+  transform: translateX(200%);
+}
+
+.cl-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cl-input__hint {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 540px;
+}
+
+.cl-input__hint--warn {
+  color: var(--warning);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.cl-input__hint--warn::before {
+  content: "•";
+  font-size: 1rem;
+  line-height: 0;
+}
+
+@media (max-width: 640px) {
+  .cl-input {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+  }
+
+  .cl-input__textarea {
+    min-height: 180px;
+    font-size: 0.8125rem;
+  }
+
+  .cl-btn--analyze {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cl-input__btn-wrap {
+    width: 100%;
+  }
+}

@@ -1,0 +1,186 @@
+.cl-disagree {
+  background:
+    radial-gradient(ellipse at top left, rgba(124, 92, 255, 0.15), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(0, 229, 209, 0.08), transparent 50%),
+    rgba(28, 28, 48, 0.6);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.cl-disagree::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-2) 70%, transparent);
+}
+
+.cl-disagree__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.cl-disagree__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cl-disagree__eyebrow {
+  font-size: 0.625rem;
+  color: var(--accent-2);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cl-disagree__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.cl-disagree__value-block {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.cl-disagree__value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  font-feature-settings: "tnum" 1;
+}
+
+.cl-disagree__suffix {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.cl-disagree__meter {
+  display: flex;
+  gap: 3px;
+  height: 28px;
+  position: relative;
+  margin: var(--space-2) 0;
+}
+
+.cl-disagree__segment {
+  flex: 1;
+  height: 100%;
+  background: rgba(124, 92, 255, 0.1);
+  border: 1px solid rgba(124, 92, 255, 0.06);
+  border-radius: 3px;
+  transition: background 400ms ease, box-shadow 400ms ease, border-color 400ms ease;
+}
+
+.cl-disagree--tier-0 .cl-disagree__segment--filled {
+  background: var(--safe);
+  box-shadow: 0 0 10px rgba(47, 232, 158, 0.5);
+}
+
+.cl-disagree--tier-1 .cl-disagree__segment--filled {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+}
+
+.cl-disagree--tier-2 .cl-disagree__segment--filled {
+  background: var(--warning);
+  box-shadow: 0 0 10px rgba(255, 181, 71, 0.5);
+}
+
+.cl-disagree--tier-3 .cl-disagree__segment--filled {
+  background: var(--danger);
+  box-shadow: 0 0 10px rgba(255, 84, 112, 0.5);
+}
+
+.cl-disagree__indicator {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 2px;
+  transform: translateX(-50%);
+  transition: left 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.cl-disagree__indicator-dot {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-base), 0 0 16px var(--text-primary);
+  animation: indicator-pulse 2s ease-in-out infinite;
+}
+
+@keyframes indicator-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--bg-base), 0 0 10px var(--text-primary);
+  }
+  50% {
+    box-shadow: 0 0 0 2px var(--bg-base), 0 0 22px var(--text-primary);
+  }
+}
+
+.cl-disagree__tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cl-disagree__tier-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+
+.cl-disagree--tier-0 .cl-disagree__tier-label {
+  color: var(--safe);
+}
+
+.cl-disagree--tier-1 .cl-disagree__tier-label {
+  color: var(--accent);
+}
+
+.cl-disagree--tier-2 .cl-disagree__tier-label {
+  color: var(--warning);
+}
+
+.cl-disagree--tier-3 .cl-disagree__tier-label {
+  color: var(--danger);
+}
+
+.cl-disagree__tier-description {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.cl-disagree__footnote {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--border);
+}
