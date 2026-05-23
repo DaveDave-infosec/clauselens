@@ -3,7 +3,7 @@ const ENV_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as string | undefined
 export const CONTRACT_ADDRESS: `0x${string}` =
   (ENV_ADDRESS && ENV_ADDRESS.startsWith("0x") && ENV_ADDRESS.length === 42
     ? ENV_ADDRESS
-    : "0x2F032bf686F346a9E86DAE9B5762Bf2B17b7cFF8") as `0x${string}`
+    : "0x030F9250a0ac44ce71879890deB929693E6e3F20") as `0x${string}`
 
 export const BRADBURY_CHAIN_ID = 4221
 export const BRADBURY_CHAIN_ID_HEX = "0x107D"

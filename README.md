@@ -7,8 +7,8 @@ ClauseLens lets you paste any document — a Terms of Service, a whitepaper, a g
 Where traditional blockchains can only verify deterministic computation, GenLayer validators can reason about intent. ClauseLens turns that capability into a forensic tool.
 
 🔗 **Live:** Deployed at `clauselens.vercel.app` (URL coming soon)
-📜 **Contract:** `0x2F032bf686F346a9E86DAE9B5762Bf2B17b7cFF8` on GenLayer Bradbury Testnet
-🔍 **Explorer:** [View contract on Bradbury](https://explorer-bradbury.genlayer.com/address/0x2F032bf686F346a9E86DAE9B5762Bf2B17b7cFF8)
+📜 **Contract:** `0x030F9250a0ac44ce71879890deB929693E6e3F20` on GenLayer Bradbury Testnet
+🔍 **Explorer:** [View contract on Bradbury](https://explorer-bradbury.genlayer.com/address/0x030F9250a0ac44ce71879890deB929693E6e3F20)
 
 ---
 
@@ -83,7 +83,7 @@ Open http://localhost:5173. Connect MetaMask, switch to Bradbury Testnet, paste 
 
 ```bash
 # frontend/.env
-VITE_CONTRACT_ADDRESS=0x2F032bf686F346a9E86DAE9B5762Bf2B17b7cFF8
+VITE_CONTRACT_ADDRESS=0x030F9250a0ac44ce71879890deB929693E6e3F20
 ```
 
 The contract address defaults to the deployed one if not set.
