@@ -18,7 +18,7 @@ export const APP_PUBLIC_URL =
   (import.meta.env.VITE_APP_URL as string | undefined) ||
   (typeof window !== "undefined" ? window.location.origin : "https://clauselens.app")
 
-export const MAX_DOCUMENT_LENGTH = 100000
+export const MAX_DOCUMENT_LENGTH = 50000
 export const ANALYSIS_POLL_INTERVAL_MS = 30000
 export const ANALYSIS_TIMEOUT_MS = 1200000 // 20 min hard cap on UI wait
 export const ANALYSIS_LONG_WAIT_MS = 300000 // 5 min — show "taking longer than usual"
