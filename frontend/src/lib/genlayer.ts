@@ -108,20 +108,32 @@ export async function analyzeDocument(
   documentText: string,
   accountAddress: string
 ): Promise<unknown> {
+  // Dynamic gas scaling: validator work + storage costs grow with
+  // document length. Default viem estimation under-shoots for large
+  // documents & TX is rejected with "intrinsic gas too low".
+  // Base 8M handles small docs; 200 gas per char scales for long ones.
+  const BASE_GAS = BigInt(8000000)
+  const PER_CHAR_GAS = BigInt(200)
+  const docLengthBigInt = BigInt(documentText.length)
+  const gasLimit = BASE_GAS + (docLengthBigInt * PER_CHAR_GAS)
+
   console.log("[ClauseLens] analyzeDocument called", {
     addressType: typeof accountAddress,
     addressLength: accountAddress?.length,
     addressPrefix: accountAddress?.slice(0, 6),
     hasEthereum: !!window.ethereum,
+    documentLength: documentText.length,
+    gasLimit: gasLimit.toString(),
   })
 
   const walletClient = createWalletClient(accountAddress)
 
-  return await walletClient.writeContract({
+  return await (walletClient.writeContract as any)({
     address: CONTRACT_ADDRESS,
     functionName: "analyze_document",
     args: [documentText],
     value: BigInt(0),
+    gas: gasLimit,
   })
 }
 
