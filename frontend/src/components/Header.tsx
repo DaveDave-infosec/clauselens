@@ -74,7 +74,7 @@ export function Header({ wallet }: HeaderProps) {
           href={explorerAddressUrl(CONTRACT_ADDRESS)}
           target="_blank"
           rel="noreferrer noopener"
-          title="View contract on Bradbury explorer"
+          title="View contract on Studio explorer"
         >
           {shortAddress(CONTRACT_ADDRESS)} ↗
         </a>
@@ -83,7 +83,7 @@ export function Header({ wallet }: HeaderProps) {
           <div className="cl-header__wallet" ref={menuRef}>
             {!wallet.isCorrectChain && (
               <button className="cl-btn cl-btn--warning" onClick={wallet.switchChain}>
-                Switch to Bradbury
+                Switch to Studio
               </button>
             )}
             <button

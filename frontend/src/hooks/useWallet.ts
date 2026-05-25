@@ -3,9 +3,9 @@ import {
   connectWallet,
   getCurrentChainId,
   hasMetaMask,
-  switchToBradbury,
+  switchToStudio,
 } from "../lib/genlayer"
-import { BRADBURY_CHAIN_ID_HEX } from "../lib/constants"
+import { STUDIO_CHAIN_ID_HEX } from "../lib/constants"
 
 export interface WalletState {
   address: string | null
@@ -55,7 +55,7 @@ export function useWallet() {
       setState((s) => ({
         ...s,
         chainId,
-        isCorrectChain: chainId.toLowerCase() === BRADBURY_CHAIN_ID_HEX.toLowerCase(),
+        isCorrectChain: chainId.toLowerCase() === STUDIO_CHAIN_ID_HEX.toLowerCase(),
       }))
     } catch {
       // ignore
@@ -71,7 +71,7 @@ export function useWallet() {
     try {
       const address = await connectWallet()
       const chainId = await getCurrentChainId()
-      const isCorrectChain = chainId.toLowerCase() === BRADBURY_CHAIN_ID_HEX.toLowerCase()
+      const isCorrectChain = chainId.toLowerCase() === STUDIO_CHAIN_ID_HEX.toLowerCase()
       writeConnectedFlag(true)
       setState({
         address,
@@ -100,7 +100,7 @@ export function useWallet() {
   const switchChain = useCallback(async () => {
     setState((s) => ({ ...s, error: null }))
     try {
-      await switchToBradbury()
+      await switchToStudio()
       await refreshChain()
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to switch network."
@@ -127,7 +127,7 @@ export function useWallet() {
       setState((s) => ({
         ...s,
         chainId,
-        isCorrectChain: chainId.toLowerCase() === BRADBURY_CHAIN_ID_HEX.toLowerCase(),
+        isCorrectChain: chainId.toLowerCase() === STUDIO_CHAIN_ID_HEX.toLowerCase(),
       }))
     }
 
@@ -158,7 +158,7 @@ export function useWallet() {
           setState({
             address: accounts[0],
             chainId,
-            isCorrectChain: chainId.toLowerCase() === BRADBURY_CHAIN_ID_HEX.toLowerCase(),
+            isCorrectChain: chainId.toLowerCase() === STUDIO_CHAIN_ID_HEX.toLowerCase(),
             isConnecting: false,
             error: null,
           })

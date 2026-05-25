@@ -3,14 +3,14 @@ const ENV_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as string | undefined
 export const CONTRACT_ADDRESS: `0x${string}` =
   (ENV_ADDRESS && ENV_ADDRESS.startsWith("0x") && ENV_ADDRESS.length === 42
     ? ENV_ADDRESS
-    : "0x030F9250a0ac44ce71879890deB929693E6e3F20") as `0x${string}`
+    : "0x5e7f754A8541bB9ece96c35Cd8864Bd66FC40179") as `0x${string}`
 
-export const BRADBURY_CHAIN_ID = 4221
-export const BRADBURY_CHAIN_ID_HEX = "0x107D"
-export const BRADBURY_CHAIN_NAME = "GenLayer Bradbury Testnet"
-export const BRADBURY_RPC_URL = "https://genlayer-testnet.rpc.caldera.xyz/http"
-export const BRADBURY_EXPLORER_URL = "https://explorer-bradbury.genlayer.com"
-export const BRADBURY_CURRENCY_SYMBOL = "GEN"
+export const STUDIO_CHAIN_ID = 61999
+export const STUDIO_CHAIN_ID_HEX = "0xF22F"
+export const STUDIO_CHAIN_NAME = "GenLayer Studio"
+export const STUDIO_RPC_URL = "https://studio.genlayer.com/api"
+export const STUDIO_EXPLORER_URL = "https://explorer-studio.genlayer.com"
+export const STUDIO_CURRENCY_SYMBOL = "GEN"
 
 // Base URL used when constructing share links. Falls back to current
 // window.location.origin at runtime so deploys to Vercel just work.

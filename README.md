@@ -1,14 +1,14 @@
 # ClauseLens
 
-**AI document forensics on GenLayer Bradbury.**
+**AI document forensics on GenLayer Studio Network.**
 
 ClauseLens lets you paste any document — a Terms of Service, a whitepaper, a governance proposal, an airdrop announcement — & have it analyzed by independent LLM validators on GenLayer. The validators reach consensus on the document's hidden manipulation, surface specific dangerous clauses, & expose buried risks that lawyers, marketers, & whitepaper authors hide in plain sight.
 
 Where traditional blockchains can only verify deterministic computation, GenLayer validators can reason about intent. ClauseLens turns that capability into a forensic tool.
 
 🔗 **Live:** Deployed at `clauselens.vercel.app` (URL coming soon)
-📜 **Contract:** `0x030F9250a0ac44ce71879890deB929693E6e3F20` on GenLayer Bradbury Testnet
-🔍 **Explorer:** [View contract on Bradbury](https://explorer-bradbury.genlayer.com/address/0x030F9250a0ac44ce71879890deB929693E6e3F20)
+📜 **Contract:** `0x5e7f754A8541bB9ece96c35Cd8864Bd66FC40179` on GenLayer Studio Network
+🔍 **Explorer:** [View contract on Studio](https://explorer-studio.genlayer.com/address/0x5e7f754A8541bB9ece96c35Cd8864Bd66FC40179)
 
 ---
 
@@ -41,13 +41,13 @@ Key methods:
 - `get_analysis_count()` — view, returns total analyses
 
 ### Frontend
-Vite + React + TypeScript + `genlayer-js` v1.x + viem v2 + MetaMask. Single-page dApp at `frontend/`. Connects to MetaMask, switches to Bradbury (chainId 4221), submits documents to the contract, polls for consensus results, & renders them in a forensic-intelligence-themed UI.
+Vite + React + TypeScript + `genlayer-js` v1.x + viem v2 + MetaMask. Single-page dApp at `frontend/`. Connects to MetaMask, switches to Studio (chainId 61999), submits documents to the contract, polls for consensus results, & renders them in a forensic-intelligence-themed UI.
 
 ---
 
-## A note on GenLayer Bradbury storage bug (May 2026)
+## A note on Bradbury storage bug (May 2026) & migration to Studio Network
 
-During contract development we hit a non-obvious bug worth documenting for future GenLayer builders.
+During contract development on Bradbury, we hit a non-obvious bug worth documenting for future GenLayer builders. After hitting repeated contract resets on Bradbury (a known testnet behavior), we migrated to GenLayer Studio Network where this dApp is now hosted.
 
 **Symptom:** A write method that called `gl.eq_principle.prompt_comparative(...)` would have its transaction reported as `ACCEPTED` by the consensus layer, but no storage writes would commit. `get_analysis_count()` would return 0 even after dozens of successful `analyze_document` transactions.
 
@@ -66,7 +66,7 @@ This was diagnosed by building progressively-simpler smoke-test contracts (`smok
 ### Prerequisites
 - Node.js 18+ & npm
 - MetaMask browser extension
-- A wallet funded with GEN tokens on Bradbury Testnet (get test tokens from the GenLayer faucet)
+- A wallet funded with GEN tokens on GenLayer Studio Network (get test tokens from the faucet in your account selector at studio.genlayer.com)
 
 ### Setup
 
@@ -77,13 +77,13 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. Connect MetaMask, switch to Bradbury Testnet, paste a document, click Analyze.
+Open http://localhost:5173. Connect MetaMask, switch to Studio Network, paste a document, click Analyze.
 
 ### Environment variables (optional)
 
 ```bash
 # frontend/.env
-VITE_CONTRACT_ADDRESS=0x030F9250a0ac44ce71879890deB929693E6e3F20
+VITE_CONTRACT_ADDRESS=0x5e7f754A8541bB9ece96c35Cd8864Bd66FC40179
 ```
 
 The contract address defaults to the deployed one if not set.
@@ -96,7 +96,7 @@ The contract address defaults to the deployed one if not set.
 - **Frontend:** Vite 5, React 18, TypeScript, viem 2.x, genlayer-js 1.x
 - **Wallet:** MetaMask via `window.ethereum`
 - **Hosting:** Vercel
-- **Chain:** GenLayer Bradbury Testnet (chainId 4221)
+- **Chain:** GenLayer Studio Network (chainId 61999)
 
 ---
 

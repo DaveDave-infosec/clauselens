@@ -1,18 +1,15 @@
 import { createClient } from "genlayer-js"
-import { testnetBradbury } from "genlayer-js/chains"
+import { studionet } from "genlayer-js/chains"
+
 import {
   CONTRACT_ADDRESS,
-  BRADBURY_CHAIN_ID_HEX,
-  BRADBURY_CHAIN_NAME,
-  BRADBURY_RPC_URL,
-  BRADBURY_EXPLORER_URL,
-  BRADBURY_CURRENCY_SYMBOL,
+  STUDIO_EXPLORER_URL,
 } from "./constants"
 
 // READ-ONLY client — used for view methods (get_analysis, etc.)
 // Created once, never needs wallet binding.
 export const readClient = createClient({
-  chain: testnetBradbury,
+  chain: studionet,
 })
 
 interface EthereumProvider {
@@ -53,12 +50,12 @@ export async function getCurrentChainId(): Promise<string> {
   return chainId
 }
 
-export async function switchToBradbury(): Promise<void> {
+export async function switchToStudio(): Promise<void> {
   if (!hasMetaMask()) throw new Error("MetaMask not detected.")
   try {
     await window.ethereum!.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: BRADBURY_CHAIN_ID_HEX }],
+      params: [{ chainId: "0xF22F" }],
     })
   } catch (err: unknown) {
     const code = (err as { code?: number })?.code
@@ -67,15 +64,15 @@ export async function switchToBradbury(): Promise<void> {
         method: "wallet_addEthereumChain",
         params: [
           {
-            chainId: BRADBURY_CHAIN_ID_HEX,
-            chainName: BRADBURY_CHAIN_NAME,
+            chainId: "0xF22F",
+            chainName: "GenLayer Studio",
             nativeCurrency: {
-              name: BRADBURY_CURRENCY_SYMBOL,
-              symbol: BRADBURY_CURRENCY_SYMBOL,
+              name: "GEN",
+              symbol: "GEN",
               decimals: 18,
             },
-            rpcUrls: [BRADBURY_RPC_URL],
-            blockExplorerUrls: [BRADBURY_EXPLORER_URL],
+            rpcUrls: ["https://studio.genlayer.com/api"],
+            blockExplorerUrls: ["https://explorer-studio.genlayer.com"],
           },
         ],
       })
@@ -96,10 +93,8 @@ function createWalletClient(accountAddress: string) {
   if (!accountAddress || !accountAddress.startsWith("0x") || accountAddress.length !== 42) {
     throw new Error("Wallet not connected. Please connect your wallet & try again.")
   }
-  // genlayer-js v1.x lets us pass account at client construction so
-  // signing requests are routed through window.ethereum.
   return createClient({
-    chain: testnetBradbury,
+    chain: studionet,
     account: accountAddress as `0x${string}`,
   })
 }
@@ -108,10 +103,6 @@ export async function analyzeDocument(
   documentText: string,
   accountAddress: string
 ): Promise<unknown> {
-  // Dynamic gas scaling: validator work + storage costs grow with
-  // document length. Default viem estimation under-shoots for large
-  // documents & TX is rejected with "intrinsic gas too low".
-  // Base 8M handles small docs; 200 gas per char scales for long ones.
   const BASE_GAS = BigInt(8000000)
   const PER_CHAR_GAS = BigInt(200)
   const docLengthBigInt = BigInt(documentText.length)
@@ -209,11 +200,11 @@ export function parseDangerFlags(dangerFlagsJson: string): string[] {
 }
 
 export function explorerTxUrl(txHash: string): string {
-  return `${BRADBURY_EXPLORER_URL}/tx/${txHash}`
+  return `${STUDIO_EXPLORER_URL}/tx/${txHash}`
 }
 
 export function explorerAddressUrl(address: string): string {
-  return `${BRADBURY_EXPLORER_URL}/address/${address}`
+  return `${STUDIO_EXPLORER_URL}/address/${address}`
 }
 
 export function shortAddress(addr: string): string {
@@ -221,5 +212,4 @@ export function shortAddress(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-// Kept for backward-compat with any imports of `client`
 export const client = readClient

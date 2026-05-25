@@ -68,7 +68,7 @@ export function DocumentInput({
           Paste any text, or try one of the example documents below to see how it works.
         </p>
         <p className="cl-input__disclaimer">
-          <span aria-hidden="true">ⓘ</span> Analyses are stored on-chain on GenLayer Bradbury & are publicly verifiable. Anyone can view all analyses through the contract or the Public Feed below.
+          <span aria-hidden="true">ⓘ</span> Analyses are stored on-chain on GenLayer Studio Network & are publicly verifiable. Anyone can view all analyses through the contract or the Public Feed below.
         </p>
       </div>
 
@@ -154,7 +154,7 @@ export function DocumentInput({
 
         {walletReady && !isAnalyzing && (
           <p className="cl-input__hint">
-            Analysis takes 1 to 6 minutes on Bradbury. Validators reach consensus independently before results are finalized.
+            Analysis takes 1 to 6 minutes on Studio Network. Validators reach consensus independently before results are finalized.
           </p>
         )}
       </div>

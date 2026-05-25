@@ -45,7 +45,7 @@ export function Hero() {
       <div className="cl-hero__copy">
         <span className="cl-hero__eyebrow">
           <span className="cl-hero__eyebrow-dot" />
-          Live on GenLayer Bradbury
+          Live on GenLayer Studio
         </span>
 
         <h1 className="cl-hero__headline">
