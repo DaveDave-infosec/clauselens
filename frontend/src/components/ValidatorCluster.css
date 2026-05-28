@@ -1,83 +1,171 @@
 .cl-cluster {
-  position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-width: 460px;
-  pointer-events: none;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
 }
 
 .cl-cluster__svg {
   width: 100%;
-  height: 100%;
-  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  filter: drop-shadow(0 0 16px rgba(124, 92, 255, 0.4));
+  height: auto;
+  display: block;
+  overflow: visible;
 }
 
-@keyframes node-pulse {
+/* Edges: hairline, very low opacity, no animation */
+.cl-cluster__edge {
+  stroke: var(--v2-accent);
+  stroke-width: 0.6;
+  opacity: 0.16;
+}
+
+/* Each node is a group of (ring, core). The group rotates as the
+   consensus moment fires, & each child has its own animation. */
+.cl-cluster__node {
+  transform-origin: center;
+}
+
+.cl-cluster__ring {
+  fill: none;
+  stroke: var(--v2-accent);
+  stroke-width: 1;
+  opacity: 0.22;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: cl-cluster-ring-pulse var(--pulse-period) ease-in-out infinite;
+}
+
+.cl-cluster__core {
+  fill: var(--v2-accent);
+  opacity: 0.85;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: cl-cluster-core-pulse var(--pulse-period) ease-in-out infinite;
+}
+
+/* Independent pulse — ring slowly expands & fades, core slowly brightens.
+   Different periods per node (set inline via --pulse-period) means the
+   five nodes never align rhythmically. */
+@keyframes cl-cluster-ring-pulse {
   0%, 100% {
-    opacity: 0.95;
+    opacity: 0.22;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.32;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes cl-cluster-core-pulse {
+  0%, 100% {
+    opacity: 0.85;
     transform: scale(1);
   }
   50% {
     opacity: 1;
-    transform: scale(1.2);
+    transform: scale(1.12);
   }
 }
 
-@keyframes halo-pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.2);
-  }
+/* Consensus moment: when consensusKey toggles, every ring gets a brief
+   brightness ripple, staggered by --consensus-delay so it cascades across
+   the five nodes rather than snapping in unison. Implemented by alternating
+   between two class variants on the parent, each of which retriggers the
+   one-shot consensus animation on the rings. */
+.cl-cluster__nodes--consensus-0 .cl-cluster__ring,
+.cl-cluster__nodes--consensus-1 .cl-cluster__ring {
+  animation:
+    cl-cluster-ring-pulse var(--pulse-period) ease-in-out infinite,
+    cl-cluster-consensus 1400ms ease-out var(--consensus-delay) 1;
 }
 
-.cl-cluster__node {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: node-pulse 2.4s ease-in-out infinite;
-}
-
-.cl-cluster__halo {
-  transform-origin: center;
-  transform-box: fill-box;
-  animation: halo-pulse 2.8s ease-in-out infinite;
-}
-
-@keyframes link-fade {
-  0%, 100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 0.85;
-  }
-}
-
-.cl-cluster__link {
-  animation: link-fade 3.5s ease-in-out infinite;
-}
-
-@keyframes pulse-travel {
+@keyframes cl-cluster-consensus {
   0% {
-    offset-distance: 0%;
-    opacity: 0;
+    opacity: 0.22;
+    stroke-width: 1;
   }
-  10% {
-    opacity: 1;
+  20% {
+    opacity: 0.85;
+    stroke-width: 1.6;
   }
-  90% {
-    opacity: 1;
+  60% {
+    opacity: 0.5;
+    stroke-width: 1.3;
   }
   100% {
-    offset-distance: 100%;
-    opacity: 0;
+    opacity: 0.22;
+    stroke-width: 1;
   }
 }
 
-.cl-cluster__pulse {
-  animation: pulse-travel 3.6s linear infinite;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
+/* Signal in flight: a small bright dot traveling from one node's
+   coordinates to another's. The CSS variables --from-x/y & --to-x/y
+   are set inline from the component. */
+.cl-cluster__signal {
+  fill: var(--v2-accent);
+  opacity: 0;
+  animation: cl-cluster-signal var(--duration) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  filter: drop-shadow(0 0 4px var(--v2-accent));
+}
+
+@keyframes cl-cluster-signal {
+  0% {
+    cx: var(--from-x);
+    cy: var(--from-y);
+    opacity: 0;
+    r: 1;
+  }
+  15% {
+    opacity: 1;
+    r: 3;
+  }
+  85% {
+    opacity: 1;
+    r: 3;
+  }
+  100% {
+    cx: var(--to-x);
+    cy: var(--to-y);
+    opacity: 0;
+    r: 1;
+  }
+}
+
+.cl-cluster__caption {
+  font-size: 0.6875rem;
+  color: var(--v2-ink-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* Reduced motion preference: disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  .cl-cluster__ring,
+  .cl-cluster__core,
+  .cl-cluster__signal,
+  .cl-cluster__nodes--consensus-0 .cl-cluster__ring,
+  .cl-cluster__nodes--consensus-1 .cl-cluster__ring {
+    animation: none;
+  }
+  .cl-cluster__core {
+    opacity: 1;
+  }
+  .cl-cluster__ring {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 640px) {
+  .cl-cluster__caption {
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+  }
 }

@@ -9,15 +9,15 @@ export function riskColor(level: string): string {
   const normalized = (level || "").toLowerCase()
   switch (normalized) {
     case "low":
-      return "var(--risk-low)"
+      return "var(--v2-signal-ok)"
     case "medium":
-      return "var(--risk-medium)"
+      return "var(--v2-signal-warn)"
     case "high":
-      return "var(--risk-high)"
+      return "var(--v2-accent)"
     case "critical":
-      return "var(--risk-critical)"
+      return "var(--v2-signal-danger)"
     default:
-      return "var(--text-secondary)"
+      return "var(--v2-ink-secondary)"
   }
 }
 

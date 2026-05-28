@@ -81,7 +81,6 @@ export function Hero() {
 
       <div className="cl-hero__visual">
         <ValidatorCluster />
-        <p className="cl-hero__visual-label">Multiple validators reasoning independently</p>
       </div>
     </section>
   )

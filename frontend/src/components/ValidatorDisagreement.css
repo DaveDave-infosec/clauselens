@@ -1,9 +1,9 @@
 .cl-disagree {
   background:
-    radial-gradient(ellipse at top left, rgba(124, 92, 255, 0.15), transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(0, 229, 209, 0.08), transparent 50%),
-    rgba(28, 28, 48, 0.6);
-  border: 1px solid var(--border-accent);
+    radial-gradient(ellipse at top left, rgba(234, 88, 12, 0.12), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(196, 65, 12, 0.06), transparent 50%),
+    rgba(31, 26, 20, 0.6);
+  border: 1px solid rgba(234, 88, 12, 0.25);
   border-radius: var(--radius-lg);
   padding: var(--space-5) var(--space-6);
   display: flex;
@@ -20,7 +20,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-2) 70%, transparent);
+  background: linear-gradient(90deg, transparent, var(--v2-accent) 30%, var(--v2-accent-deep) 70%, transparent);
 }
 
 .cl-disagree__header {
@@ -38,7 +38,7 @@
 
 .cl-disagree__eyebrow {
   font-size: 0.625rem;
-  color: var(--accent-2);
+  color: var(--v2-accent);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -47,7 +47,7 @@
 .cl-disagree__title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--v2-ink);
   letter-spacing: -0.015em;
   line-height: 1.2;
 }
@@ -61,7 +61,7 @@
 .cl-disagree__value {
   font-size: 2.25rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--v2-ink);
   letter-spacing: -0.025em;
   line-height: 1;
   font-feature-settings: "tnum" 1;
@@ -69,7 +69,7 @@
 
 .cl-disagree__suffix {
   font-size: 0.875rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
 }
 
 .cl-disagree__meter {
@@ -83,30 +83,30 @@
 .cl-disagree__segment {
   flex: 1;
   height: 100%;
-  background: rgba(124, 92, 255, 0.1);
-  border: 1px solid rgba(124, 92, 255, 0.06);
+  background: rgba(234, 88, 12, 0.1);
+  border: 1px solid rgba(234, 88, 12, 0.06);
   border-radius: 3px;
   transition: background 400ms ease, box-shadow 400ms ease, border-color 400ms ease;
 }
 
 .cl-disagree--tier-0 .cl-disagree__segment--filled {
-  background: var(--safe);
-  box-shadow: 0 0 10px rgba(47, 232, 158, 0.5);
+  background: var(--v2-signal-ok);
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
 }
 
 .cl-disagree--tier-1 .cl-disagree__segment--filled {
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+  background: var(--v2-accent);
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.5);
 }
 
 .cl-disagree--tier-2 .cl-disagree__segment--filled {
-  background: var(--warning);
-  box-shadow: 0 0 10px rgba(255, 181, 71, 0.5);
+  background: var(--v2-signal-warn);
+  box-shadow: 0 0 10px rgba(202, 138, 4, 0.5);
 }
 
 .cl-disagree--tier-3 .cl-disagree__segment--filled {
-  background: var(--danger);
-  box-shadow: 0 0 10px rgba(255, 84, 112, 0.5);
+  background: var(--v2-signal-danger);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
 }
 
 .cl-disagree__indicator {
@@ -127,17 +127,17 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--bg-base), 0 0 16px var(--text-primary);
+  background: var(--v2-ink);
+  box-shadow: 0 0 0 2px var(--v2-bg), 0 0 16px var(--v2-ink);
   animation: indicator-pulse 2s ease-in-out infinite;
 }
 
 @keyframes indicator-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 2px var(--bg-base), 0 0 10px var(--text-primary);
+    box-shadow: 0 0 0 2px var(--v2-bg), 0 0 10px var(--v2-ink);
   }
   50% {
-    box-shadow: 0 0 0 2px var(--bg-base), 0 0 22px var(--text-primary);
+    box-shadow: 0 0 0 2px var(--v2-bg), 0 0 22px var(--v2-ink);
   }
 }
 
@@ -150,37 +150,37 @@
 .cl-disagree__tier-label {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--v2-ink);
   letter-spacing: -0.005em;
 }
 
 .cl-disagree--tier-0 .cl-disagree__tier-label {
-  color: var(--safe);
+  color: var(--v2-signal-ok);
 }
 
 .cl-disagree--tier-1 .cl-disagree__tier-label {
-  color: var(--accent);
+  color: var(--v2-accent);
 }
 
 .cl-disagree--tier-2 .cl-disagree__tier-label {
-  color: var(--warning);
+  color: var(--v2-signal-warn);
 }
 
 .cl-disagree--tier-3 .cl-disagree__tier-label {
-  color: var(--danger);
+  color: var(--v2-signal-danger);
 }
 
 .cl-disagree__tier-description {
   font-size: 0.8125rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   line-height: 1.5;
 }
 
 .cl-disagree__footnote {
   font-size: 0.6875rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
   line-height: 1.6;
   letter-spacing: 0.01em;
   padding-top: var(--space-3);
-  border-top: 1px dashed var(--border);
+  border-top: 1px dashed var(--v2-rule);
 }

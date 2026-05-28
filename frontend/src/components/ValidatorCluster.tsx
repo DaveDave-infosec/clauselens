@@ -1,135 +1,189 @@
-import { useEffect, useRef } from "react"
-import { useMousePosition } from "../hooks/useMousePosition"
+import { useEffect, useRef, useState } from "react"
 import "./ValidatorCluster.css"
 
-interface Validator {
-  id: number
-  x: number // 0-100 percent
-  y: number // 0-100 percent
-  baseRadius: number
-  phase: number
+// Five validator nodes, asymmetric arrangement, deliberately uneven so they
+// read as five distinct entities rather than a regular geometric shape.
+// Coordinates are inside a 600 x 360 viewBox.
+const NODES = [
+  { id: "n1", cx: 130, cy: 110, r: 6.5, size: "lg", pulsePeriod: 3.2 },
+  { id: "n2", cx: 280, cy: 70,  r: 7.5, size: "lg", pulsePeriod: 4.8 },
+  { id: "n3", cx: 470, cy: 130, r: 6,   size: "md", pulsePeriod: 4.1 },
+  { id: "n4", cx: 200, cy: 250, r: 7,   size: "lg", pulsePeriod: 5.5 },
+  { id: "n5", cx: 410, cy: 280, r: 5.5, size: "md", pulsePeriod: 6.2 },
+] as const
+
+// Edges chosen to hint at a graph without spelling one out.
+// Each edge is referenced by node-id pair, used both for static lines
+// & as the route for traveling signals.
+const EDGES: Array<[string, string]> = [
+  ["n1", "n2"],
+  ["n2", "n3"],
+  ["n1", "n4"],
+  ["n2", "n4"],
+  ["n3", "n5"],
+  ["n4", "n5"],
+  ["n2", "n5"],
+]
+
+const NODE_MAP = Object.fromEntries(NODES.map((n) => [n.id, n]))
+
+// Signal travel: one signal in flight at a time, fires every 4-6 seconds
+// on a randomly-chosen edge. Travels for ~1.2 seconds.
+const SIGNAL_INTERVAL_MIN = 4000
+const SIGNAL_INTERVAL_MAX = 6000
+const SIGNAL_DURATION = 1200
+
+// Consensus moment: every 12-15 seconds, all nodes briefly brighten in
+// a slight stagger so it ripples rather than snaps.
+const CONSENSUS_INTERVAL_MIN = 12000
+const CONSENSUS_INTERVAL_MAX = 15000
+
+interface Signal {
+  key: number
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
 }
 
-const VALIDATORS: Validator[] = [
-  { id: 0, x: 16, y: 30, baseRadius: 4.5, phase: 0 },
-  { id: 1, x: 32, y: 70, baseRadius: 3.5, phase: 0.6 },
-  { id: 2, x: 48, y: 24, baseRadius: 5, phase: 1.1 },
-  { id: 3, x: 56, y: 64, baseRadius: 4, phase: 1.6 },
-  { id: 4, x: 70, y: 36, baseRadius: 3.8, phase: 2.1 },
-  { id: 5, x: 78, y: 72, baseRadius: 4.6, phase: 2.7 },
-  { id: 6, x: 88, y: 28, baseRadius: 3.6, phase: 3.2 },
-  { id: 7, x: 24, y: 84, baseRadius: 3.2, phase: 3.7 },
-]
-
-// Connections: pairs of validator IDs
-const LINKS: Array<[number, number]> = [
-  [0, 2],
-  [0, 1],
-  [1, 3],
-  [2, 3],
-  [2, 4],
-  [3, 5],
-  [4, 5],
-  [4, 6],
-  [5, 6],
-  [1, 7],
-  [3, 7],
-]
-
 export function ValidatorCluster() {
-  const svgRef = useRef<SVGSVGElement | null>(null)
-  const mouse = useMousePosition()
+  const [signal, setSignal] = useState<Signal | null>(null)
+  const [consensusKey, setConsensusKey] = useState(0)
+  const signalKeyRef = useRef(0)
 
-  // Mouse parallax — translate the whole svg slightly based on mouse
+  // Schedule signal-travel events on random intervals along random edges.
   useEffect(() => {
-    const el = svgRef.current
-    if (!el) return
-    const tx = mouse.nx * 6
-    const ty = mouse.ny * 6
-    el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`
-  }, [mouse.nx, mouse.ny])
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    function scheduleNext() {
+      const delay =
+        SIGNAL_INTERVAL_MIN +
+        Math.random() * (SIGNAL_INTERVAL_MAX - SIGNAL_INTERVAL_MIN)
+      timeoutId = setTimeout(() => {
+        const edge = EDGES[Math.floor(Math.random() * EDGES.length)]
+        const from = NODE_MAP[edge[0]]
+        const to = NODE_MAP[edge[1]]
+        if (from && to) {
+          // Randomize direction so signals don't always flow the same way.
+          const reverse = Math.random() < 0.5
+          const a = reverse ? to : from
+          const b = reverse ? from : to
+          signalKeyRef.current += 1
+          setSignal({
+            key: signalKeyRef.current,
+            fromX: a.cx,
+            fromY: a.cy,
+            toX: b.cx,
+            toY: b.cy,
+          })
+          // Clear after the animation duration so the signal element is
+          // removed from the DOM rather than lingering.
+          setTimeout(() => setSignal(null), SIGNAL_DURATION + 50)
+        }
+        scheduleNext()
+      }, delay)
+    }
+
+    scheduleNext()
+    return () => clearTimeout(timeoutId)
+  }, [])
+
+  // Schedule consensus-moment ripples.
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    function scheduleNext() {
+      const delay =
+        CONSENSUS_INTERVAL_MIN +
+        Math.random() * (CONSENSUS_INTERVAL_MAX - CONSENSUS_INTERVAL_MIN)
+      timeoutId = setTimeout(() => {
+        setConsensusKey((k) => k + 1)
+        scheduleNext()
+      }, delay)
+    }
+
+    scheduleNext()
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   return (
     <div className="cl-cluster" aria-hidden="true">
       <svg
-        ref={svgRef}
-        viewBox="0 0 100 100"
+        viewBox="0 0 600 360"
+        xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
         className="cl-cluster__svg"
       >
-        <defs>
-          <radialGradient id="cl-cluster-node" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#a89dff" stopOpacity="1" />
-            <stop offset="60%" stopColor="#7c5cff" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#7c5cff" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="cl-cluster-link" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#7c5cff" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#00e5d1" stopOpacity="0.6" />
-          </linearGradient>
-        </defs>
-
-        {/* Links */}
-        <g stroke="url(#cl-cluster-link)" strokeWidth="0.25" fill="none">
-          {LINKS.map(([a, b], i) => {
-            const va = VALIDATORS[a]
-            const vb = VALIDATORS[b]
+        {/* Static edges, hairline & low opacity */}
+        <g className="cl-cluster__edges">
+          {EDGES.map(([a, b]) => {
+            const fromNode = NODE_MAP[a]
+            const toNode = NODE_MAP[b]
+            if (!fromNode || !toNode) return null
             return (
               <line
-                key={i}
-                x1={va.x}
-                y1={va.y}
-                x2={vb.x}
-                y2={vb.y}
-                className="cl-cluster__link"
-                style={{ animationDelay: `${i * 0.18}s` }}
+                key={`${a}-${b}`}
+                x1={fromNode.cx}
+                y1={fromNode.cy}
+                x2={toNode.cx}
+                y2={toNode.cy}
+                className="cl-cluster__edge"
               />
             )
           })}
         </g>
 
-        {/* Pulses traveling along links */}
-        <g>
-          {LINKS.map(([a, b], i) => {
-            const va = VALIDATORS[a]
-            const vb = VALIDATORS[b]
-            return (
-              <circle
-                key={`pulse-${i}`}
-                r="0.5"
-                fill="#ffffff"
-                className="cl-cluster__pulse"
-                style={{
-                  animationDelay: `${i * 0.55}s`,
-                  offsetPath: `path("M${va.x},${va.y} L${vb.x},${vb.y}")`,
-                }}
-              />
-            )
-          })}
-        </g>
+        {/* Signal in flight along one edge */}
+        {signal && (
+          <circle
+            key={signal.key}
+            r={2.5}
+            className="cl-cluster__signal"
+            style={
+              {
+                "--from-x": `${signal.fromX}px`,
+                "--from-y": `${signal.fromY}px`,
+                "--to-x": `${signal.toX}px`,
+                "--to-y": `${signal.toY}px`,
+                "--duration": `${SIGNAL_DURATION}ms`,
+              } as React.CSSProperties
+            }
+          />
+        )}
 
-        {/* Nodes */}
-        <g>
-          {VALIDATORS.map((v) => (
-            <g key={v.id} transform={`translate(${v.x} ${v.y})`}>
+        {/* Five nodes — each has its own pulse period & a ring */}
+        <g className={`cl-cluster__nodes cl-cluster__nodes--consensus-${consensusKey % 2}`}>
+          {NODES.map((node, idx) => (
+            <g
+              key={node.id}
+              className={`cl-cluster__node cl-cluster__node--${node.size}`}
+              style={
+                {
+                  "--pulse-period": `${node.pulsePeriod}s`,
+                  "--consensus-delay": `${idx * 100}ms`,
+                } as React.CSSProperties
+              }
+            >
               <circle
-                r={v.baseRadius * 1.8}
-                fill="url(#cl-cluster-node)"
-                opacity="0.4"
-                className="cl-cluster__halo"
-                style={{ animationDelay: `${v.phase * 0.3}s` }}
+                cx={node.cx}
+                cy={node.cy}
+                r={node.r + 18}
+                className="cl-cluster__ring"
               />
               <circle
-                r={v.baseRadius}
-                fill="#7c5cff"
-                className="cl-cluster__node"
-                style={{ animationDelay: `${v.phase * 0.3}s` }}
+                cx={node.cx}
+                cy={node.cy}
+                r={node.r}
+                className="cl-cluster__core"
               />
-              <circle r={v.baseRadius * 0.4} fill="#ffffff" opacity="0.9" />
             </g>
           ))}
         </g>
       </svg>
+
+      <p className="cl-cluster__caption mono">
+        validators reasoning independently
+      </p>
     </div>
   )
 }

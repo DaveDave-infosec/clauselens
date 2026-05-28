@@ -16,8 +16,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--danger-dim);
-  color: var(--danger);
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--v2-signal-danger);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 700;
@@ -25,7 +25,7 @@
 
 .cl-flags__title {
   font-size: 0.8125rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   font-weight: 500;
   letter-spacing: 0.01em;
   text-transform: uppercase;
@@ -34,11 +34,11 @@
 
 .cl-flags__count {
   font-size: 0.75rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
   padding: 2px var(--space-2);
-  background: var(--bg-input);
+  background: var(--v2-bg-subtle);
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--v2-rule);
 }
 
 .cl-flags__list {
@@ -53,13 +53,13 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--danger);
+  background: var(--v2-bg-subtle);
+  border: 1px solid var(--v2-rule);
+  border-left: 3px solid var(--v2-signal-danger);
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--text-primary);
+  color: var(--v2-ink);
   position: relative;
   overflow: hidden;
   transition: transform var(--transition-fast), border-color var(--transition-fast);
@@ -69,14 +69,14 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--danger-dim), transparent 30%);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.15), transparent 30%);
   opacity: calc(var(--flag-intensity, 0.5) * 0.4);
   pointer-events: none;
 }
 
 .cl-flags__item:hover {
-  border-color: var(--border-strong);
-  border-left-color: var(--danger);
+  border-color: var(--v2-rule-strong);
+  border-left-color: var(--v2-signal-danger);
   transform: translateX(2px);
 }
 
@@ -84,10 +84,10 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--danger);
+  background: var(--v2-signal-danger);
   margin-top: 7px;
   flex-shrink: 0;
-  box-shadow: 0 0 8px var(--danger);
+  box-shadow: 0 0 8px var(--v2-signal-danger);
 }
 
 .cl-flags__text {

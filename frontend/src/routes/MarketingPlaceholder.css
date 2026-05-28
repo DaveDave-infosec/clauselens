@@ -1,0 +1,59 @@
+.cl-marketing-placeholder {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--v2-bg);
+  color: var(--v2-ink);
+  font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-7) var(--space-5);
+}
+
+.cl-marketing-placeholder__inner {
+  max-width: 640px;
+  text-align: center;
+}
+
+.cl-marketing-placeholder__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v2-accent);
+  margin-bottom: var(--space-4);
+}
+
+.cl-marketing-placeholder__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 1.1;
+  color: var(--v2-ink);
+  margin-bottom: var(--space-5);
+}
+
+.cl-marketing-placeholder__body {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--v2-ink-secondary);
+  margin-bottom: var(--space-7);
+}
+
+.cl-marketing-placeholder__link {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--v2-accent);
+  border-bottom: 1px solid var(--v2-accent);
+  padding-bottom: 2px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.cl-marketing-placeholder__link:hover {
+  color: var(--v2-accent-deep);
+  border-color: var(--v2-accent-deep);
+}

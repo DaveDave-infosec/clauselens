@@ -53,8 +53,8 @@ export function Header({ wallet }: HeaderProps) {
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="header-logo-grad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#7c5cff" />
-                <stop offset="100%" stopColor="#00e5d1" />
+                <stop offset="0%" stopColor="#EA580C" />
+                <stop offset="100%" stopColor="#C2410C" />
               </linearGradient>
             </defs>
             <circle cx="13" cy="13" r="9" fill="none" stroke="url(#header-logo-grad)" strokeWidth="2" />

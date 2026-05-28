@@ -1,5 +1,11 @@
 :root {
-  /* Surfaces */
+  /* =====================================================================
+   * V1 LEGACY TOKENS — preserved so existing product surface keeps working.
+   * These will be replaced one component at a time in Block 3+ then deleted.
+   * Do NOT add new usages of these. Use --v2-* tokens for new work.
+   * ===================================================================== */
+
+  /* Surfaces — legacy */
   --bg-base: #0d0d18;
   --bg-elevated: #15152400;
   --bg-elevated-solid: #161628;
@@ -7,17 +13,17 @@
   --bg-card-hover: #232340;
   --bg-input: #0f0f1c;
 
-  /* Primary accent */
+  /* Primary accent — legacy violet */
   --accent: #7c5cff;
   --accent-hover: #9479ff;
   --accent-dim: #7c5cff33;
   --accent-glow: #7c5cff66;
 
-  /* Secondary accent */
+  /* Secondary accent — legacy cyan */
   --accent-2: #00e5d1;
   --accent-2-dim: #00e5d133;
 
-  /* Signal colors */
+  /* Signal colors — legacy */
   --danger: #ff5470;
   --danger-dim: #ff547033;
   --warning: #ffb547;
@@ -25,35 +31,39 @@
   --safe: #2fe89e;
   --safe-dim: #2fe89e33;
 
-  /* Risk levels */
+  /* Risk levels — legacy */
   --risk-low: #2fe89e;
   --risk-medium: #ffb547;
   --risk-high: #ff8a5b;
   --risk-critical: #ff5470;
 
-  /* Text — BRIGHTER overall for readability against dark glass */
+  /* Text — legacy */
   --text-primary: #f4f4ff;
   --text-secondary: #b8b8d4;
   --text-tertiary: #8a8aac;
   --text-on-accent: #ffffff;
 
-  /* Borders */
+  /* Borders — legacy */
   --border: #2a2a44;
   --border-strong: #3a3a5c;
   --border-accent: #7c5cff55;
+
+  /* Shadows — legacy (reference legacy violet) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(124, 92, 255, 0.45);
+  --shadow-glow-cyan: 0 0 32px rgba(0, 229, 209, 0.35);
+
+  /* =====================================================================
+   * SHARED PRIMITIVES — used by both V1 & V2. Stable, do not change.
+   * ===================================================================== */
 
   /* Radii */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 40px rgba(124, 92, 255, 0.45);
-  --shadow-glow-cyan: 0 0 32px rgba(0, 229, 209, 0.35);
 
   /* Spacing */
   --space-1: 4px;
@@ -70,6 +80,7 @@
   /* Typography */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --font-display: "Fraunces", "Source Serif Pro", Georgia, serif;
 
   /* Transitions */
   --transition-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,4 +93,81 @@
   --z-elevated: 10;
   --z-sticky: 100;
   --z-modal: 1000;
+
+  /* =====================================================================
+   * V2 MARKETING SURFACE — light, warm, editorial.
+   * Activated on routes / and /how-it-works via [data-surface="marketing"].
+   * Defaults here apply when no data-surface attribute is set, so the
+   * marketing palette becomes the new global default for V2.
+   * ===================================================================== */
+
+  /* Surfaces */
+  --v2-bg:           #FAF7F2;
+  --v2-bg-elevated:  #FFFFFF;
+  --v2-bg-subtle:    #F2EDE5;
+
+  /* Ink */
+  --v2-ink:           #1A1714;
+  --v2-ink-secondary: #4A4540;
+  --v2-ink-muted:     #7A736B;
+
+  /* Accent — burnt rust */
+  --v2-accent:        #C2410C;
+  --v2-accent-deep:   #7C2D12;
+  --v2-accent-soft:   #FED7AA;
+
+  /* Forensic signals */
+  --v2-signal-danger: #B91C1C;
+  --v2-signal-warn:   #A16207;
+  --v2-signal-ok:     #15803D;
+
+  /* Lines */
+  --v2-rule:          #E5DDD0;
+  --v2-rule-strong:   #C9BFAF;
+
+  /* Shadows — soft, warm-shifted */
+  --v2-shadow-card:   0 1px 2px rgba(26, 23, 20, 0.04),
+                      0 8px 24px rgba(26, 23, 20, 0.06);
+  --v2-shadow-card-lg:0 4px 8px rgba(26, 23, 20, 0.05),
+                      0 24px 48px rgba(26, 23, 20, 0.08);
+}
+
+/* =======================================================================
+ * V2 PRODUCT SURFACE — warm dark, brighter rust.
+ * Activated on /analyze via [data-surface="product"] on the root element.
+ * Re-maps the same --v2-* variable names so components can use one naming
+ * system across both surfaces & inherit the correct values from context.
+ * ======================================================================= */
+
+[data-surface="product"] {
+  /* Surfaces */
+  --v2-bg:           #14110E;
+  --v2-bg-elevated:  #1F1A14;
+  --v2-bg-subtle:    #1A1612;
+
+  /* Ink — inverted role */
+  --v2-ink:           #FAF7F2;
+  --v2-ink-secondary: #C9BFAF;
+  --v2-ink-muted:     #8B7F73;
+
+  /* Accent — brighter rust on dark */
+  --v2-accent:        #EA580C;
+  --v2-accent-deep:   #C2410C;
+  --v2-accent-soft:   #431407;
+
+  /* Forensic signals — identical across surfaces, but the
+     warn tone is shifted slightly brighter for dark readability */
+  --v2-signal-danger: #DC2626;
+  --v2-signal-warn:   #CA8A04;
+  --v2-signal-ok:     #16A34A;
+
+  /* Lines */
+  --v2-rule:          #2A2520;
+  --v2-rule-strong:   #3F3833;
+
+  /* Shadows — deeper on dark */
+  --v2-shadow-card:   0 1px 2px rgba(0, 0, 0, 0.3),
+                      0 8px 24px rgba(0, 0, 0, 0.4);
+  --v2-shadow-card-lg:0 4px 8px rgba(0, 0, 0, 0.35),
+                      0 24px 48px rgba(0, 0, 0, 0.5);
 }

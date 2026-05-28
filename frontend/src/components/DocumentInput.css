@@ -1,14 +1,14 @@
 .cl-glass {
   background:
-    linear-gradient(180deg, rgba(28, 28, 48, 0.55), rgba(22, 22, 40, 0.55));
-  border: 1px solid var(--border);
+    linear-gradient(180deg, rgba(31, 26, 20, 0.6), rgba(26, 22, 18, 0.6));
+  border: 1px solid var(--v2-rule);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(28px) saturate(160%);
   -webkit-backdrop-filter: blur(28px) saturate(160%);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04) inset,
     0 24px 48px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(124, 92, 255, 0.04);
+    0 0 0 1px rgba(234, 88, 12, 0.04);
   position: relative;
   overflow: hidden;
 }
@@ -38,7 +38,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-2) 70%, transparent);
+  background: linear-gradient(90deg, transparent, var(--v2-accent) 30%, var(--v2-accent-deep) 70%, transparent);
   opacity: 0.85;
   z-index: 1;
 }
@@ -52,24 +52,24 @@
 .cl-input__title {
   font-size: 1.0625rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--v2-ink);
   letter-spacing: -0.015em;
 }
 
 .cl-input__subtitle {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   line-height: 1.55;
 }
 
 .cl-input__disclaimer {
   font-size: 0.75rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
   line-height: 1.55;
   margin-top: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background: rgba(124, 92, 255, 0.05);
-  border-left: 2px solid var(--border-accent);
+  background: rgba(234, 88, 12, 0.05);
+  border-left: 2px solid rgba(234, 88, 12, 0.3);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   display: flex;
   align-items: flex-start;
@@ -77,7 +77,7 @@
 }
 
 .cl-input__disclaimer > span {
-  color: var(--accent);
+  color: var(--v2-accent);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -91,11 +91,11 @@
 
 .cl-input__textarea {
   width: 100%;
-  background: rgba(10, 10, 20, 0.6);
-  border: 1px solid var(--border);
+  background: rgba(20, 17, 14, 0.6);
+  border: 1px solid var(--v2-rule);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
-  color: var(--text-primary);
+  color: var(--v2-ink);
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.65;
@@ -106,22 +106,22 @@
 }
 
 .cl-input__textarea:focus {
-  border-color: var(--accent);
-  background: rgba(8, 8, 16, 0.8);
+  border-color: var(--v2-accent);
+  background: rgba(20, 17, 14, 0.8);
   box-shadow:
-    0 0 0 4px rgba(124, 92, 255, 0.12),
-    0 0 32px rgba(124, 92, 255, 0.08) inset;
+    0 0 0 4px rgba(234, 88, 12, 0.12),
+    0 0 32px rgba(234, 88, 12, 0.08) inset;
 }
 
 .cl-input__textarea::placeholder {
-  color: rgba(184, 184, 212, 0.65);
+  color: rgba(139, 127, 115, 0.65);
   font-family: var(--font-sans);
   font-style: italic;
 }
 
 .cl-input__textarea--over {
-  border-color: var(--danger);
-  box-shadow: 0 0 0 4px rgba(255, 84, 112, 0.12);
+  border-color: var(--v2-signal-danger);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
 }
 
 .cl-input__textarea:disabled {
@@ -142,32 +142,32 @@
 .cl-input__counter-bar {
   flex: 1;
   height: 3px;
-  background: rgba(124, 92, 255, 0.1);
+  background: rgba(234, 88, 12, 0.1);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .cl-input__counter-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background: linear-gradient(90deg, var(--v2-accent), var(--v2-accent-deep));
   border-radius: 2px;
   transition: width var(--transition-base);
-  box-shadow: 0 0 8px rgba(124, 92, 255, 0.4);
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.4);
 }
 
 .cl-input__counter-fill--over {
-  background: var(--danger);
+  background: var(--v2-signal-danger);
 }
 
 .cl-input__counter {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .cl-input__counter--over {
-  color: var(--danger);
+  color: var(--v2-signal-danger);
 }
 
 .cl-input__presets-block {
@@ -181,7 +181,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
 }
 
 .cl-input__presets {
@@ -196,9 +196,9 @@
   right: var(--space-3);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--text-secondary);
-  background: rgba(15, 15, 28, 0.7);
-  border: 1px solid var(--border);
+  color: var(--v2-ink-secondary);
+  background: rgba(26, 22, 18, 0.7);
+  border: 1px solid var(--v2-rule);
   padding: 4px var(--space-2);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
@@ -209,16 +209,16 @@
 }
 
 .cl-input__clear:hover {
-  color: var(--danger);
-  border-color: var(--danger);
-  background: var(--danger-dim);
+  color: var(--v2-signal-danger);
+  border-color: var(--v2-signal-danger);
+  background: rgba(220, 38, 38, 0.1);
 }
 
 .cl-chip {
   font-size: 0.75rem;
-  color: var(--text-secondary);
-  background: rgba(28, 28, 48, 0.5);
-  border: 1px solid var(--border);
+  color: var(--v2-ink-secondary);
+  background: rgba(31, 26, 20, 0.5);
+  border: 1px solid var(--v2-rule);
   padding: 6px var(--space-3);
   border-radius: 999px;
   transition: all var(--transition-fast);
@@ -227,16 +227,16 @@
 }
 
 .cl-chip:hover:not(:disabled) {
-  color: var(--text-primary);
-  border-color: var(--border-accent);
+  color: var(--v2-ink);
+  border-color: rgba(234, 88, 12, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
 }
 
 .cl-chip--active {
-  color: var(--accent);
-  background: var(--accent-dim);
-  border-color: var(--accent);
+  color: var(--v2-accent);
+  background: rgba(234, 88, 12, 0.12);
+  border-color: var(--v2-accent);
 }
 
 .cl-input__actions {
@@ -266,7 +266,7 @@
   position: absolute;
   inset: 0;
   border-radius: var(--radius-md);
-  border: 1.5px solid var(--accent);
+  border: 1.5px solid var(--v2-accent);
   pointer-events: none;
   animation: pulse-ring 2.4s ease-out infinite;
 }
@@ -276,10 +276,10 @@
 }
 
 .cl-btn--analyze {
-  background: linear-gradient(135deg, var(--accent), #9479ff 50%, #00e5d1 200%);
+  background: linear-gradient(135deg, var(--v2-accent), #D4530A 50%, var(--v2-accent-deep));
   background-size: 200% 200%;
   background-position: 0% 50%;
-  color: var(--text-on-accent);
+  color: #fff;
   font-size: 0.9375rem;
   font-weight: 600;
   padding: var(--space-3) var(--space-6);
@@ -288,8 +288,8 @@
   position: relative;
   overflow: hidden;
   box-shadow:
-    0 8px 24px rgba(124, 92, 255, 0.3),
-    0 0 0 1px rgba(124, 92, 255, 0.3) inset;
+    0 8px 24px rgba(234, 88, 12, 0.3),
+    0 0 0 1px rgba(234, 88, 12, 0.3) inset;
   transition: all var(--transition-base), background-position 600ms ease;
 }
 
@@ -297,16 +297,16 @@
   transform: translateY(-2px);
   background-position: 100% 50%;
   box-shadow:
-    0 14px 36px rgba(124, 92, 255, 0.5),
-    0 0 60px rgba(124, 92, 255, 0.4),
-    0 0 0 1px rgba(124, 92, 255, 0.5) inset;
+    0 14px 36px rgba(234, 88, 12, 0.5),
+    0 0 60px rgba(234, 88, 12, 0.4),
+    0 0 0 1px rgba(234, 88, 12, 0.5) inset;
 }
 
 .cl-btn--analyze:disabled {
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.25), rgba(0, 229, 209, 0.15));
-  color: rgba(244, 244, 255, 0.7);
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.25), rgba(196, 65, 12, 0.15));
+  color: rgba(250, 247, 242, 0.5);
   box-shadow:
-    0 0 0 1px rgba(124, 92, 255, 0.3) inset,
+    0 0 0 1px rgba(234, 88, 12, 0.2) inset,
     0 4px 12px rgba(0, 0, 0, 0.2);
   cursor: not-allowed;
 }
@@ -349,13 +349,13 @@
 
 .cl-input__hint {
   font-size: 0.8125rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   line-height: 1.5;
   max-width: 540px;
 }
 
 .cl-input__hint--warn {
-  color: var(--warning);
+  color: var(--v2-signal-warn);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -386,5 +386,189 @@
 
   .cl-input__btn-wrap {
     width: 100%;
+  }
+}
+
+/* ===== File upload drop zone ===== */
+
+.cl-input__dropzone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
+  padding: var(--space-4) var(--space-5);
+  background: rgba(20, 17, 14, 0.4);
+  border: 1.5px dashed var(--v2-rule-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  outline: none;
+}
+
+.cl-input__dropzone:hover:not(.cl-input__dropzone--disabled) {
+  border-color: var(--v2-accent);
+  background: rgba(234, 88, 12, 0.06);
+}
+
+.cl-input__dropzone:focus-visible {
+  border-color: var(--v2-accent);
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.18);
+}
+
+.cl-input__dropzone--dragging {
+  border-color: var(--v2-accent);
+  border-style: solid;
+  background: rgba(234, 88, 12, 0.12);
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15), 0 0 32px rgba(234, 88, 12, 0.18) inset;
+  transform: scale(1.005);
+}
+
+.cl-input__dropzone--extracting {
+  border-style: solid;
+  border-color: var(--v2-accent);
+  background: rgba(234, 88, 12, 0.08);
+  cursor: progress;
+}
+
+.cl-input__dropzone--error {
+  border-color: var(--v2-signal-danger);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.cl-input__dropzone--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cl-input__file-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.cl-input__dropzone-state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+  color: var(--v2-ink-secondary);
+  width: 100%;
+}
+
+.cl-input__dropzone-state--idle {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cl-input__dropzone-icon {
+  font-size: 1.25rem;
+  color: var(--v2-accent);
+  font-weight: 700;
+}
+
+.cl-input__dropzone-prompt {
+  color: var(--v2-ink-secondary);
+  font-size: 0.9375rem;
+}
+
+.cl-input__dropzone-link {
+  color: var(--v2-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(234, 88, 12, 0.4);
+  text-underline-offset: 3px;
+}
+
+.cl-input__dropzone-hint {
+  width: 100%;
+  text-align: center;
+  font-size: 0.6875rem;
+  color: var(--v2-ink-muted);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.cl-input__dropzone-state--success {
+  justify-content: flex-start;
+}
+
+.cl-input__dropzone-filetag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--v2-accent);
+  background: rgba(234, 88, 12, 0.1);
+  border: 1px solid var(--v2-accent);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.cl-input__dropzone-filename {
+  color: var(--v2-ink);
+  font-weight: 600;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.cl-input__dropzone-meta {
+  color: var(--v2-ink-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.cl-input__dropzone-state--error {
+  justify-content: flex-start;
+  color: var(--v2-signal-danger);
+}
+
+.cl-input__dropzone-error-text {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--v2-ink);
+  line-height: 1.4;
+}
+
+.cl-input__dropzone-dismiss {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--v2-rule);
+  border-radius: 50%;
+  color: var(--v2-ink-secondary);
+  font-size: 0.6875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cl-input__dropzone-dismiss:hover {
+  color: var(--v2-ink);
+  border-color: var(--v2-rule-strong);
+  background: rgba(250, 247, 242, 0.04);
+}
+
+@media (max-width: 640px) {
+  .cl-input__dropzone {
+    min-height: 80px;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .cl-input__dropzone-prompt {
+    font-size: 0.875rem;
   }
 }

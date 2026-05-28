@@ -15,13 +15,13 @@ function colorForValue(value: number, direction: Direction): string {
   // high-is-good: inverted
   const v = Math.max(0, Math.min(100, value))
   if (direction === "high-is-bad") {
-    if (v <= 30) return "var(--safe)"
-    if (v <= 60) return "var(--warning)"
-    return "var(--danger)"
+    if (v <= 30) return "var(--v2-signal-ok)"
+    if (v <= 60) return "var(--v2-signal-warn)"
+    return "var(--v2-signal-danger)"
   } else {
-    if (v <= 30) return "var(--danger)"
-    if (v <= 60) return "var(--warning)"
-    return "var(--safe)"
+    if (v <= 30) return "var(--v2-signal-danger)"
+    if (v <= 60) return "var(--v2-signal-warn)"
+    return "var(--v2-signal-ok)"
   }
 }
 

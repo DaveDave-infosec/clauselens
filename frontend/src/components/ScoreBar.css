@@ -13,7 +13,7 @@
 
 .cl-score__label {
   font-size: 0.6875rem;
-  color: var(--text-secondary);
+  color: var(--v2-ink-secondary);
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -29,7 +29,7 @@
 
 .cl-score__value-suffix {
   font-size: 0.9375rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
   font-weight: 600;
   margin-left: 2px;
 }
@@ -37,10 +37,10 @@
 .cl-score__track {
   position: relative;
   height: 10px;
-  background: rgba(124, 92, 255, 0.08);
+  background: rgba(234, 88, 12, 0.08);
   border-radius: 5px;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid var(--v2-rule);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -72,6 +72,6 @@
 
 .cl-score__description {
   font-size: 0.75rem;
-  color: var(--text-tertiary);
+  color: var(--v2-ink-muted);
   line-height: 1.4;
 }

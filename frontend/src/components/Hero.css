@@ -21,47 +21,49 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-2);
-  background: rgba(0, 229, 209, 0.1);
-  border: 1px solid rgba(0, 229, 209, 0.35);
+  color: var(--v2-accent);
+  background: rgba(234, 88, 12, 0.08);
+  border: 1px solid rgba(234, 88, 12, 0.28);
   padding: 6px var(--space-3);
   border-radius: 999px;
   width: fit-content;
+  font-family: var(--font-sans);
 }
 
 .cl-hero__eyebrow-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 8px var(--accent-2);
-  animation: breathe 1.6s ease-in-out infinite;
+  background: var(--v2-accent);
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.6);
+  animation: breathe 1.8s ease-in-out infinite;
 }
 
 .cl-hero__headline {
-  font-size: clamp(2rem, 4.5vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.8vw, 3.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 1.05;
-  color: var(--text-primary);
+  color: var(--v2-ink);
 }
 
+/* The highlighted phrase. Solid rust, not a gradient. The editorial
+   direction wants conviction over candy. */
 .cl-hero__headline em {
-  font-style: normal;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-style: italic;
+  color: var(--v2-accent);
   position: relative;
-  padding: 0 4px;
+  padding: 0 2px;
 }
 
 .cl-hero__sub {
+  font-family: var(--font-sans);
   font-size: 1.0625rem;
-  line-height: 1.6;
-  color: var(--text-secondary);
+  line-height: 1.65;
+  color: var(--v2-ink-secondary);
   max-width: 540px;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.003em;
 }
 
 .cl-hero__stats {
@@ -76,7 +78,7 @@
   flex-direction: column;
   gap: 6px;
   padding-right: var(--space-5);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--v2-rule);
 }
 
 .cl-stat:last-child {
@@ -86,8 +88,8 @@
 
 .cl-stat__value {
   font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--v2-ink);
   line-height: 1;
   letter-spacing: -0.02em;
   display: flex;
@@ -97,8 +99,8 @@
 
 .cl-stat__suffix {
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 500;
+  color: var(--v2-ink-muted);
   margin-left: 2px;
 }
 
@@ -106,8 +108,9 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-secondary);
-  font-weight: 700;
+  color: var(--v2-ink-muted);
+  font-weight: 600;
+  font-family: var(--font-sans);
 }
 
 .cl-hero__visual {
@@ -117,15 +120,10 @@
   gap: var(--space-3);
 }
 
+/* The old visual label is removed in the markup. The orphan class
+   below is retained as a no-op in case any legacy reference reaches it. */
 .cl-hero__visual-label {
-  font-size: 0.6875rem;
-  color: var(--accent-2);
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  opacity: 0.85;
-  text-shadow: 0 0 8px rgba(0, 229, 209, 0.3);
+  display: none;
 }
 
 @media (max-width: 900px) {
