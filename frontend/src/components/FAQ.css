@@ -1,0 +1,69 @@
+.cl-faq {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6);
+  border-top: 1px solid var(--v2-rule);
+}
+
+.cl-faq__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-9);
+  max-width: 640px;
+}
+
+.cl-faq__eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--v2-accent);
+}
+
+.cl-faq__heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--v2-ink);
+}
+
+.cl-faq__list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--v2-rule);
+}
+
+.cl-faq__item {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: var(--space-7);
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid var(--v2-rule);
+}
+
+.cl-faq__q {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 500;
+  color: var(--v2-ink);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.cl-faq__a {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--v2-ink-secondary);
+}
+
+@media (max-width: 760px) {
+  .cl-faq__item {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}

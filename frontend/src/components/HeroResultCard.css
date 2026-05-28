@@ -1,0 +1,156 @@
+/* Dark forensic card on the light marketing page — a window into the product.
+   Uses fixed dark values rather than the marketing surface tokens, since this
+   card deliberately shows the product aesthetic regardless of surface. */
+.cl-herocard {
+  background: #1F1A14;
+  border: 1px solid #2A2520;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  box-shadow:
+    0 4px 8px rgba(26, 23, 20, 0.08),
+    0 24px 48px rgba(26, 23, 20, 0.14);
+  width: 100%;
+  max-width: 440px;
+}
+
+.cl-herocard__topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid #2A2520;
+}
+
+.cl-herocard__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #EA580C;
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.7);
+}
+
+.cl-herocard__topbar-label {
+  font-size: 0.6875rem;
+  color: #8B7F73;
+  letter-spacing: 0.04em;
+}
+
+.cl-herocard__snippet {
+  background: #14110E;
+  border: 1px solid #2A2520;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.cl-herocard__snippet-text {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #C9BFAF;
+  font-style: italic;
+}
+
+.cl-herocard__flag {
+  background: rgba(234, 88, 12, 0.18);
+  color: #FED7AA;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border-bottom: 1.5px solid #EA580C;
+  font-style: normal;
+}
+
+.cl-herocard__scores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cl-herocard__score {
+  display: grid;
+  grid-template-columns: 92px 1fr 32px;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cl-herocard__score-label {
+  font-size: 0.75rem;
+  color: #8B7F73;
+  font-weight: 500;
+}
+
+.cl-herocard__bar {
+  height: 6px;
+  background: rgba(234, 88, 12, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cl-herocard__bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.cl-herocard__bar-fill--danger {
+  background: #DC2626;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+}
+
+.cl-herocard__bar-fill--warn {
+  background: #CA8A04;
+  box-shadow: 0 0 8px rgba(202, 138, 4, 0.4);
+}
+
+.cl-herocard__bar-fill--low {
+  background: #DC2626;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+}
+
+.cl-herocard__score-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FAF7F2;
+  text-align: right;
+}
+
+.cl-herocard__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid #2A2520;
+}
+
+.cl-herocard__consensus {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cl-herocard__consensus-label {
+  font-size: 0.625rem;
+  color: #8B7F73;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cl-herocard__consensus-value {
+  font-size: 0.8125rem;
+  color: #15803D;
+  font-weight: 500;
+}
+
+.cl-herocard__link {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #EA580C;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.cl-herocard__link:hover {
+  color: #FED7AA;
+}
