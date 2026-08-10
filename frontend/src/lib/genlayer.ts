@@ -247,6 +247,20 @@ export async function getVerificationCount(): Promise<number> {
   }
 }
 
+export async function getAllVerifications(): Promise<ContractVerificationResult[]> {
+  try {
+    const result = (await readClient.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "get_all_verifications",
+      args: [],
+    })) as unknown as ContractVerificationResult[]
+    return Array.isArray(result) ? result : []
+  } catch (err) {
+    console.error("getAllVerifications failed:", err)
+    return []
+  }
+}
+
 export function parseDangerFlags(dangerFlagsJson: string): string[] {
   try {
     const parsed = JSON.parse(dangerFlagsJson || "[]")

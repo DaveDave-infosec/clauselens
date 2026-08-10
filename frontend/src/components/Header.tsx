@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { shortAddress, explorerAddressUrl } from "../lib/genlayer"
 import { CONTRACT_ADDRESS } from "../lib/constants"
 import type { WalletState } from "../hooks/useWallet"
@@ -15,6 +15,7 @@ interface HeaderProps {
 }
 
 export function Header({ wallet }: HeaderProps) {
+  const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
@@ -70,9 +71,9 @@ export function Header({ wallet }: HeaderProps) {
       </div>
 
       <div className="cl-header__actions">
-        <nav style={{ display: "flex", gap: 14, marginRight: 8 }}>
-          <Link to="/analyze" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: 0.85 }}>Analyze</Link>
-          <Link to="/verify" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: 0.85 }}>Verify</Link>
+        <nav style={{ display: "flex", gap: 16, marginRight: 8 }}>
+          <Link to="/analyze" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: pathname === "/analyze" ? 1 : 0.6, fontWeight: pathname === "/analyze" ? 600 : 400, borderBottom: pathname === "/analyze" ? "2px solid #c2410c" : "2px solid transparent", paddingBottom: 2 }}>Analyze</Link>
+          <Link to="/verify" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: pathname === "/verify" ? 1 : 0.6, fontWeight: pathname === "/verify" ? 600 : 400, borderBottom: pathname === "/verify" ? "2px solid #c2410c" : "2px solid transparent", paddingBottom: 2 }}>Verify</Link>
         </nav>
         <a
           className="cl-header__contract-link mono"

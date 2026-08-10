@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useState } from "react"
 import { AmbientBackground } from "../components/AmbientBackground"
 import { Header } from "../components/Header"
 import { Hero } from "../components/Hero"
@@ -7,6 +7,7 @@ import {
   verifyClaim,
   getVerificationCount,
   getVerification,
+  getAllVerifications,
   explorerAddressUrl,
   type ContractVerificationResult,
 } from "../lib/genlayer"
@@ -32,9 +33,32 @@ const VERDICT_STYLES: Record<string, { bg: string; fg: string; label: string }> 
   INSUFFICIENT: { bg: "#20232a", fg: "#9ca3af", label: "Insufficient evidence" },
 }
 
-const EXAMPLE = {
-  claim: "The build configuration sets the framework to vite.",
-  url: "https://raw.githubusercontent.com/DaveDave-infosec/clauselens/main/frontend/vercel.json",
+const EXAMPLES: { label: string; claim: string; url: string }[] = [
+  {
+    label: "go-ethereum license",
+    claim: "This project is licensed under the GNU General Public License.",
+    url: "https://raw.githubusercontent.com/ethereum/go-ethereum/master/COPYING",
+  },
+  {
+    label: "React license",
+    claim: "The license in this file is the MIT License.",
+    url: "https://raw.githubusercontent.com/facebook/react/main/LICENSE",
+  },
+  {
+    label: "Catch a false claim",
+    claim: "This project is licensed under the MIT License.",
+    url: "https://raw.githubusercontent.com/ethereum/go-ethereum/master/COPYING",
+  },
+]
+
+const chipStyle: React.CSSProperties = {
+  background: "none",
+  border: "1px solid rgba(255,255,255,0.2)",
+  color: "inherit",
+  borderRadius: 999,
+  padding: "6px 12px",
+  cursor: "pointer",
+  fontSize: 13,
 }
 
 export default function Verify() {
@@ -48,6 +72,7 @@ export default function Verify() {
   const [phase, setPhase] = useState<Phase>("idle")
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ContractVerificationResult | null>(null)
+  const [recent, setRecent] = useState<ContractVerificationResult[]>([])
 
   const isVerifying =
     phase === "submitting" || phase === "waiting" || phase === "waiting-long" || phase === "fetching"
@@ -70,6 +95,15 @@ export default function Verify() {
             ? "Consensus reached. Fetching the verdict…"
             : ""
 
+  const loadRecent = useCallback(async () => {
+    const all = await getAllVerifications()
+    setRecent(all.slice(0, 6))
+  }, [])
+
+  useEffect(() => {
+    loadRecent()
+  }, [loadRecent])
+
   const handleVerify = useCallback(async () => {
     if (!wallet.address) return
     const c = claim.trim()
@@ -80,9 +114,9 @@ export default function Verify() {
     }
     setError(null)
     setResult(null)
+    setPhase("submitting")
     try {
       const startCount = await getVerificationCount()
-      setPhase("submitting")
       await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
@@ -118,19 +152,30 @@ export default function Verify() {
       if (!v) throw new Error(`Verification ${vid} not found after consensus.`)
       setResult(v)
       setPhase("done")
+      loadRecent()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.")
       setPhase("error")
     }
-  }, [claim, evidenceUrl, wallet.address])
+  }, [claim, evidenceUrl, wallet.address, loadRecent])
 
-  const loadExample = useCallback(() => {
-    setClaim(EXAMPLE.claim)
-    setEvidenceUrl(EXAMPLE.url)
+  const loadExample = useCallback((ex: { claim: string; url: string }) => {
+    setClaim(ex.claim)
+    setEvidenceUrl(ex.url)
+    setError(null)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setClaim("")
+    setEvidenceUrl("")
+    setResult(null)
+    setError(null)
+    setPhase("idle")
   }, [])
 
   const errorBanner = error || wallet.error
   const vStyle = result ? VERDICT_STYLES[result.verdict] || VERDICT_STYLES.INSUFFICIENT : null
+  const hasContent = claim !== "" || evidenceUrl !== "" || result !== null
 
   return (
     <>
@@ -149,110 +194,47 @@ export default function Verify() {
           )}
 
           <section style={{ maxWidth: 820, margin: "0 auto", width: "100%" }}>
-            <div
-              style={{
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: 14,
-                padding: 22,
-                background: "rgba(255,255,255,0.03)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                  gap: 12,
-                  flexWrap: "wrap",
-                }}
-              >
-                <h2 style={{ margin: 0, fontSize: 20 }}>Verify a claim against live external evidence</h2>
-                <button
-                  type="button"
-                  onClick={loadExample}
-                  disabled={isVerifying}
-                  style={{
-                    background: "none",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    color: "inherit",
-                    borderRadius: 8,
-                    padding: "6px 10px",
-                    cursor: "pointer",
-                    fontSize: 13,
-                  }}
-                >
-                  Load example
-                </button>
-              </div>
+            <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: 14, padding: 22, background: "rgba(255,255,255,0.03)" }}>
+              <h2 style={{ margin: 0, fontSize: 20 }}>Verify a claim against live external evidence</h2>
               <p style={{ opacity: 0.7, fontSize: 14, marginTop: 8 }}>
                 The contract fetches the evidence URL itself, then independent validators read whether the
                 evidence supports the claim and reach consensus. The verdict is grounded in fetched text, not
                 any model's training data.
               </p>
 
-              <label style={{ display: "block", fontSize: 13, opacity: 0.8, marginTop: 16, marginBottom: 6 }}>
-                Claim
-              </label>
+              <div style={{ fontSize: 12, opacity: 0.6, marginTop: 16, marginBottom: 6 }}>Try an example</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {EXAMPLES.map((ex) => (
+                  <button key={ex.label} type="button" onClick={() => loadExample(ex)} disabled={isVerifying} style={chipStyle}>{ex.label}</button>
+                ))}
+              </div>
+
+              <label style={{ display: "block", fontSize: 13, opacity: 0.8, marginTop: 18, marginBottom: 6 }}>Claim</label>
               <textarea
                 value={claim}
                 onChange={(e) => setClaim(e.target.value)}
                 disabled={isVerifying}
-                placeholder="e.g. The build configuration sets the framework to vite."
+                placeholder="e.g. This project is licensed under the GNU General Public License."
                 rows={3}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  borderRadius: 10,
-                  padding: 12,
-                  background: "rgba(0,0,0,0.25)",
-                  color: "inherit",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  fontFamily: "inherit",
-                  fontSize: 15,
-                  resize: "vertical",
-                }}
+                style={{ width: "100%", boxSizing: "border-box", borderRadius: 10, padding: 12, background: "rgba(0,0,0,0.25)", color: "inherit", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "inherit", fontSize: 15, resize: "vertical" }}
               />
 
-              <label style={{ display: "block", fontSize: 13, opacity: 0.8, marginTop: 14, marginBottom: 6 }}>
-                Evidence URL (a stable reference page)
-              </label>
+              <label style={{ display: "block", fontSize: 13, opacity: 0.8, marginTop: 14, marginBottom: 6 }}>Evidence URL (a stable reference page)</label>
               <input
                 type="text"
                 value={evidenceUrl}
                 onChange={(e) => setEvidenceUrl(e.target.value)}
                 disabled={isVerifying}
                 placeholder="https://…"
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  borderRadius: 10,
-                  padding: 12,
-                  background: "rgba(0,0,0,0.25)",
-                  color: "inherit",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  fontFamily: "inherit",
-                  fontSize: 15,
-                }}
+                style={{ width: "100%", boxSizing: "border-box", borderRadius: 10, padding: 12, background: "rgba(0,0,0,0.25)", color: "inherit", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "inherit", fontSize: 15 }}
               />
 
-              <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                <button
-                  type="button"
-                  onClick={handleVerify}
-                  disabled={isVerifying || !walletReady}
-                  style={{
-                    borderRadius: 10,
-                    padding: "12px 22px",
-                    border: "none",
-                    cursor: isVerifying || !walletReady ? "not-allowed" : "pointer",
-                    background: "#c2410c",
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: 600,
-                    opacity: isVerifying || !walletReady ? 0.55 : 1,
-                  }}
-                >
+              <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                <button type="button" onClick={handleVerify} disabled={isVerifying || !walletReady} style={{ borderRadius: 10, padding: "12px 22px", border: "none", cursor: isVerifying || !walletReady ? "not-allowed" : "pointer", background: "#c2410c", color: "#fff", fontSize: 15, fontWeight: 600, opacity: isVerifying || !walletReady ? 0.55 : 1 }}>
                   {isVerifying ? "Verifying…" : "Verify claim"}
+                </button>
+                <button type="button" onClick={handleReset} disabled={isVerifying || !hasContent} style={{ borderRadius: 10, padding: "12px 18px", border: "1px solid rgba(255,255,255,0.2)", cursor: isVerifying || !hasContent ? "not-allowed" : "pointer", background: "none", color: "inherit", fontSize: 14, opacity: isVerifying || !hasContent ? 0.4 : 0.85 }}>
+                  Clear
                 </button>
                 {isVerifying && loadingMessage && (
                   <span style={{ opacity: 0.75, fontSize: 14 }}>{loadingMessage}</span>
@@ -261,31 +243,16 @@ export default function Verify() {
                   <span style={{ opacity: 0.65, fontSize: 14 }}>{walletStatusMessage}</span>
                 )}
               </div>
+
+              <p style={{ fontSize: 12.5, opacity: 0.55, marginTop: 12, marginBottom: 0 }}>
+                Verification runs a live fetch and validator consensus. It usually takes 1 to 2 minutes.
+              </p>
             </div>
 
             {result && vStyle && (
-              <div
-                className="fade-in"
-                style={{
-                  marginTop: 22,
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: 14,
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    background: vStyle.bg,
-                    padding: "18px 22px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <span style={{ color: vStyle.fg, fontSize: 22, fontWeight: 700, letterSpacing: 0.3 }}>
-                    {vStyle.label}
-                  </span>
+              <div className="fade-in" style={{ marginTop: 22, border: "1px solid rgba(255,255,255,0.12)", borderRadius: 14, overflow: "hidden" }}>
+                <div style={{ background: vStyle.bg, padding: "18px 22px", display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                  <span style={{ color: vStyle.fg, fontSize: 22, fontWeight: 700, letterSpacing: 0.3 }}>{vStyle.label}</span>
                   <span style={{ marginLeft: "auto", fontSize: 13, opacity: 0.8 }}>
                     Confidence {result.confidence}% · Validator disagreement {result.validator_disagreement}%
                   </span>
@@ -295,29 +262,9 @@ export default function Verify() {
                   <p style={{ margin: "0 0 16px", fontSize: 15, lineHeight: 1.55 }}>{result.reasoning || "No reasoning returned."}</p>
 
                   {result.minority_note && result.minority_note.trim() !== "" && (
-                    <div
-                      style={{
-                        borderLeft: "3px solid #fbbf24",
-                        background: "rgba(251,191,36,0.08)",
-                        padding: "12px 14px",
-                        borderRadius: 8,
-                        marginBottom: 16,
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontSize: 12,
-                          textTransform: "uppercase",
-                          letterSpacing: 1,
-                          color: "#fbbf24",
-                          marginBottom: 4,
-                        }}
-                      >
-                        Minority view
-                      </div>
-                      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.92 }}>
-                        {result.minority_note}
-                      </p>
+                    <div style={{ borderLeft: "3px solid #fbbf24", background: "rgba(251,191,36,0.08)", padding: "12px 14px", borderRadius: 8, marginBottom: 16 }}>
+                      <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, color: "#fbbf24", marginBottom: 4 }}>Minority view</div>
+                      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.92 }}>{result.minority_note}</p>
                     </div>
                   )}
 
@@ -325,59 +272,49 @@ export default function Verify() {
                   <p style={{ margin: "0 0 14px", fontSize: 14 }}>{result.claim}</p>
 
                   <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>Evidence source</div>
-                  
-                    <a
-                    href={result.evidence_url}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    style={{ fontSize: 14, wordBreak: "break-all" }}
-                  >
-                    {result.evidence_url}
-                  </a>
+                  <a href={result.evidence_url} target="_blank" rel="noreferrer noopener" style={{ fontSize: 14, wordBreak: "break-all" }}>{result.evidence_url}</a>
 
                   {result.evidence_excerpt && (
                     <>
-                      <div style={{ fontSize: 13, opacity: 0.7, margin: "14px 0 4px" }}>
-                        What the validators read (excerpt)
-                      </div>
-                      <pre
-                        style={{
-                          margin: 0,
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                          fontSize: 12.5,
-                          opacity: 0.8,
-                          background: "rgba(0,0,0,0.25)",
-                          padding: 12,
-                          borderRadius: 8,
-                          maxHeight: 180,
-                          overflow: "auto",
-                        }}
-                      >
-                        {result.evidence_excerpt}
-                      </pre>
+                      <div style={{ fontSize: 13, opacity: 0.7, margin: "14px 0 4px" }}>What the validators read (excerpt)</div>
+                      <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: 12.5, opacity: 0.8, background: "rgba(0,0,0,0.25)", padding: 12, borderRadius: 8, maxHeight: 180, overflow: "auto" }}>{result.evidence_excerpt}</pre>
                     </>
                   )}
 
-                  <p style={{ marginTop: 16, fontSize: 12, opacity: 0.55 }}>
-                    Fetching evidence proves what the source says, not that the source is authoritative. Judge the
-                    source above yourself. Contract{" "}
-                    <a href={explorerAddressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer noopener">
-                      on the explorer
-                    </a>
-                    .
-                  </p>
+                  <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                    <button type="button" onClick={handleReset} style={{ borderRadius: 10, padding: "10px 18px", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", background: "none", color: "inherit", fontSize: 14 }}>Verify another claim</button>
+                    <span style={{ fontSize: 12, opacity: 0.55 }}>
+                      Fetching evidence proves what the source says, not that the source is authoritative. Judge the source yourself. Contract{" "}
+                      <a href={explorerAddressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer noopener">on the explorer</a>.
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
           </section>
 
+          {recent.length > 0 && (
+            <section style={{ maxWidth: 820, margin: "28px auto 0", width: "100%" }}>
+              <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, opacity: 0.6, marginBottom: 10 }}>Recent verifications (on-chain, public)</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {recent.map((r) => {
+                  const s = VERDICT_STYLES[r.verdict] || VERDICT_STYLES.INSUFFICIENT
+                  return (
+                    <div key={r.verification_id} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", background: "rgba(255,255,255,0.02)" }}>
+                      <span style={{ color: s.fg, fontWeight: 600, fontSize: 13, minWidth: 92 }}>{s.label}</span>
+                      <span style={{ flex: 1, fontSize: 13, opacity: 0.85, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.claim}</span>
+                      <span style={{ fontSize: 12, opacity: 0.55 }}>{r.confidence}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
           <footer className="cl-footer">
             <p>
               Built on{" "}
-              <a href="https://genlayer.com" target="_blank" rel="noreferrer noopener">
-                GenLayer
-              </a>
+              <a href="https://genlayer.com" target="_blank" rel="noreferrer noopener">GenLayer</a>
               . Consensus over live evidence, not frozen training data.
             </p>
           </footer>
