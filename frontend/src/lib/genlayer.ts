@@ -190,6 +190,63 @@ export async function getAnalysisCount(): Promise<number> {
   }
 }
 
+export interface ContractVerificationResult {
+  verification_id: string
+  claim: string
+  evidence_url: string
+  evidence_excerpt: string
+  verdict: string
+  confidence: number
+  reasoning: string
+  minority_note: string
+  validator_disagreement: number
+}
+
+export async function verifyClaim(
+  claim: string,
+  evidenceUrl: string,
+  accountAddress: string
+): Promise<unknown> {
+  const walletClient = createWalletClient(accountAddress)
+  return await (walletClient.writeContract as any)({
+    address: CONTRACT_ADDRESS,
+    functionName: "verify_claim",
+    args: [claim, evidenceUrl],
+    value: BigInt(0),
+    gas: BigInt(12000000),
+  })
+}
+
+export async function getVerification(
+  verificationId: string
+): Promise<ContractVerificationResult | null> {
+  try {
+    const result = (await readClient.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "get_verification",
+      args: [verificationId],
+    })) as unknown as ContractVerificationResult
+    return result
+  } catch (err) {
+    console.error("getVerification failed:", err)
+    return null
+  }
+}
+
+export async function getVerificationCount(): Promise<number> {
+  try {
+    const result = (await readClient.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "get_verification_count",
+      args: [],
+    })) as number | bigint
+    return Number(result)
+  } catch (err) {
+    console.error("getVerificationCount failed:", err)
+    return 0
+  }
+}
+
 export function parseDangerFlags(dangerFlagsJson: string): string[] {
   try {
     const parsed = JSON.parse(dangerFlagsJson || "[]")

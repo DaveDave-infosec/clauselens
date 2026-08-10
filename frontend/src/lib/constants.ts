@@ -3,7 +3,7 @@ const ENV_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as string | undefined
 export const CONTRACT_ADDRESS: `0x${string}` =
   (ENV_ADDRESS && ENV_ADDRESS.startsWith("0x") && ENV_ADDRESS.length === 42
     ? ENV_ADDRESS
-    : "0x5e7f754A8541bB9ece96c35Cd8864Bd66FC40179") as `0x${string}`
+    : "0xF55371ff010a579B1BD11B15913b6FD218C3bfFf") as `0x${string}`
 
 export const STUDIO_CHAIN_ID = 61999
 export const STUDIO_CHAIN_ID_HEX = "0xF22F"

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { Link } from "react-router-dom"
 import { shortAddress, explorerAddressUrl } from "../lib/genlayer"
 import { CONTRACT_ADDRESS } from "../lib/constants"
 import type { WalletState } from "../hooks/useWallet"
@@ -69,6 +70,10 @@ export function Header({ wallet }: HeaderProps) {
       </div>
 
       <div className="cl-header__actions">
+        <nav style={{ display: "flex", gap: 14, marginRight: 8 }}>
+          <Link to="/analyze" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: 0.85 }}>Analyze</Link>
+          <Link to="/verify" style={{ fontSize: 14, textDecoration: "none", color: "inherit", opacity: 0.85 }}>Verify</Link>
+        </nav>
         <a
           className="cl-header__contract-link mono"
           href={explorerAddressUrl(CONTRACT_ADDRESS)}
