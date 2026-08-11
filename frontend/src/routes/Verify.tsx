@@ -73,6 +73,7 @@ export default function Verify() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ContractVerificationResult | null>(null)
   const [recent, setRecent] = useState<ContractVerificationResult[]>([])
+  const [feedOpen, setFeedOpen] = useState(true)
 
   const isVerifying =
     phase === "submitting" || phase === "waiting" || phase === "waiting-long" || phase === "fetching"
@@ -295,7 +296,11 @@ export default function Verify() {
 
           {recent.length > 0 && (
             <section style={{ maxWidth: 820, margin: "28px auto 0", width: "100%" }}>
-              <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, opacity: 0.6, marginBottom: 10 }}>Recent verifications (on-chain, public)</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, opacity: 0.6 }}>Recent verifications (on-chain, public)</div>
+                <button type="button" onClick={() => setFeedOpen((v) => !v)} style={{ marginLeft: "auto", background: "none", border: "1px solid rgba(255,255,255,0.2)", color: "inherit", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 12, opacity: 0.8 }}>{feedOpen ? "Collapse" : "Expand"}</button>
+              </div>
+              {feedOpen && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {recent.map((r) => {
                   const s = VERDICT_STYLES[r.verdict] || VERDICT_STYLES.INSUFFICIENT
@@ -308,6 +313,7 @@ export default function Verify() {
                   )
                 })}
               </div>
+              )}
             </section>
           )}
 
