@@ -24,7 +24,7 @@ type Phase =
 
 const PHASE_MESSAGES: Record<Phase, string> = {
   idle: "",
-  submitting: "Submitting to Bradbury…",
+  submitting: "Submitting to Studio…",
   "waiting-consensus": "Validators are reading the document…",
   "waiting-consensus-long": "Still working… consensus is taking longer than usual",
   "fetching-result": "Consensus reached. Fetching results…",

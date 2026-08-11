@@ -132,6 +132,9 @@ export default function Analyze() {
 
           {selected && (
             <div ref={resultRef}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+                <button type="button" onClick={() => setSelected(null)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.2)", color: "inherit", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: 13, opacity: 0.85 }}>Close</button>
+              </div>
               <AnalysisResult analysis={selected} currentWallet={wallet.address} />
             </div>
           )}
