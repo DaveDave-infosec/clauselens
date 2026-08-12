@@ -7,6 +7,8 @@ import {
   verifyClaim,
   getVerificationCount,
   getVerification,
+  getLastRequestId,
+  getRequestIdAt,
   getAllVerifications,
   explorerAddressUrl,
   type ContractVerificationResult,
@@ -118,19 +120,20 @@ export default function Verify() {
     setPhase("submitting")
     try {
       const startCount = await getVerificationCount()
+      const startLastId = await getLastRequestId()
       await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
-      const targetCount = startCount + 1
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
       const longWaitAt = Date.now() + ANALYSIS_LONG_WAIT_MS
-      let foundCount = startCount
+      let rid = ""
 
       await sleep(ANALYSIS_POLL_INITIAL_MS)
-      while (foundCount < targetCount && Date.now() < deadline) {
+      while (rid === "" && Date.now() < deadline) {
         if (Date.now() >= longWaitAt) setPhase("waiting-long")
+        let count = startCount
         try {
-          foundCount = await getVerificationCount()
+          count = await getVerificationCount()
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message.toLowerCase() : ""
           if (msg.includes("rate limit") || msg.includes("limitexceeded")) {
@@ -138,19 +141,29 @@ export default function Verify() {
             continue
           }
         }
-        if (foundCount < targetCount) await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
+        const latestId = await getLastRequestId()
+        if (count > startCount) {
+          rid = latestId && latestId !== startLastId ? latestId : await getRequestIdAt(count)
+        } else if (latestId && latestId !== startLastId) {
+          rid = latestId
+        }
+        if (rid === "") await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
       }
 
-      if (foundCount < targetCount) {
+      if (rid === "") {
         throw new Error(
-          "Timed out waiting for consensus. The transaction may still complete. Check the explorer or refresh in a few minutes."
+          "Timed out waiting for consensus. The transaction may still complete. Check the recent list or refresh in a few minutes."
         )
       }
 
       setPhase("fetching")
-      const vid = `verification_${targetCount}`
-      const v = await getVerification(vid)
-      if (!v) throw new Error(`Verification ${vid} not found after consensus.`)
+      let v: ContractVerificationResult | null = null
+      for (let i = 0; i < 6; i++) {
+        v = await getVerification(rid)
+        if (v) break
+        await sleep(2000)
+      }
+      if (!v) throw new Error("Verification not found after consensus.")
       setResult(v)
       setPhase("done")
       loadRecent()
@@ -282,6 +295,15 @@ export default function Verify() {
                     </>
                   )}
 
+                  <div style={{ fontSize: 13, opacity: 0.7, margin: "14px 0 4px" }}>Receipt (content-addressed)</div>
+                  <div style={{ fontSize: 12.5, fontFamily: "monospace", opacity: 0.8, background: "rgba(0,0,0,0.25)", padding: 12, borderRadius: 8, wordBreak: "break-all", lineHeight: 1.6 }}>
+                    <div>request_id: {result.request_id}</div>
+                    <div>evidence sha256: {result.evidence_hash}</div>
+                  </div>
+                  <p style={{ fontSize: 12, opacity: 0.5, margin: "6px 0 0" }}>
+                    The request ID is a sha256 of the claim, the URL, and the fetched evidence. The evidence hash fingerprints the exact source text the validators read, so this receipt binds to it and identical inputs return the same receipt.
+                  </p>
+
                   <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                     <button type="button" onClick={handleReset} style={{ borderRadius: 10, padding: "10px 18px", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", background: "none", color: "inherit", fontSize: 14 }}>Verify another claim</button>
                     <span style={{ fontSize: 12, opacity: 0.55 }}>
@@ -305,7 +327,7 @@ export default function Verify() {
                 {recent.map((r) => {
                   const s = VERDICT_STYLES[r.verdict] || VERDICT_STYLES.INSUFFICIENT
                   return (
-                    <div key={r.verification_id} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", background: "rgba(255,255,255,0.02)" }}>
+                    <div key={r.request_id} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", background: "rgba(255,255,255,0.02)" }}>
                       <span style={{ color: s.fg, fontWeight: 600, fontSize: 13, minWidth: 92 }}>{s.label}</span>
                       <span style={{ flex: 1, fontSize: 13, opacity: 0.85, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.claim}</span>
                       <span style={{ fontSize: 12, opacity: 0.55 }}>{r.confidence}%</span>

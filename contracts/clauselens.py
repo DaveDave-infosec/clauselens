@@ -2,8 +2,9 @@
 from genlayer import *
 import typing
 import json
+import hashlib
 
-# ClauseLens V3 — AI document forensics + external-evidence verification.
+# ClauseLens V3.1 - AI document forensics + external-evidence verification.
 # NOTE: the Depends line MUST be physical line 1 with code directly under it
 # (no comment/blank lines between it and the imports), or GenLayer Studio
 # rejects it as absent_runner_comment. Storage stays flat: no dataclass, no
@@ -19,14 +20,19 @@ class ClauseLens(gl.Contract):
     disagreement_scores: TreeMap[str, u64]
     analysis_counter: u64
 
+    # V3.1 external-evidence verification (content-addressed + hashed).
+    # Records are keyed by request_id = sha256(claim, url, evidence_hash).
     verification_counter: u64
-    v_blobs: TreeMap[str, str]
-    v_verdicts: TreeMap[str, str]
-    v_disagreement: TreeMap[str, u64]
+    last_request_id: str
+    r_index: TreeMap[str, str]
+    r_verdict: TreeMap[str, str]
+    r_disagreement: TreeMap[str, u64]
+    r_blob: TreeMap[str, str]
 
     def __init__(self):
         self.analysis_counter = u64(0)
         self.verification_counter = u64(0)
+        self.last_request_id = ""
 
     @gl.public.write
     def analyze_document(self, document_text: str) -> typing.Any:
@@ -150,6 +156,14 @@ class ClauseLens(gl.Contract):
     def get_analysis_count(self) -> u64:
         return self.analysis_counter
 
+    # ---------------------------------------------------------------
+    # V3.1 external-evidence verification.
+    # Each receipt is content-addressed: evidence_hash = sha256(the exact
+    # fetched evidence) and request_id = sha256(claim, url, evidence_hash),
+    # so a receipt provably binds to the durable source content it judged.
+    # Idempotent: identical claim + url + fetched content returns the same
+    # receipt, no re-run of consensus.
+    # ---------------------------------------------------------------
     @gl.public.write
     def verify_claim(self, claim: str, evidence_url: str) -> str:
         if not claim or len(claim.strip()) == 0:
@@ -170,6 +184,15 @@ class ClauseLens(gl.Contract):
 
         evidence = gl.eq_principle.strict_eq(fetch_evidence)
         local_evidence = evidence
+
+        evidence_hash = hashlib.sha256(local_evidence.encode("utf-8")).hexdigest()
+        id_material = local_claim + "\x00" + local_url + "\x00" + evidence_hash
+        request_id = hashlib.sha256(id_material.encode("utf-8")).hexdigest()
+
+        self.last_request_id = request_id
+
+        if request_id in self.r_verdict:
+            return request_id
 
         def build_prompt() -> str:
             return (
@@ -216,58 +239,72 @@ class ClauseLens(gl.Contract):
         reasoning = str(parsed.get("reasoning", ""))
         minority = str(parsed.get("minority_note", ""))
 
+        current = u64(int(self.verification_counter) + 1)
+        self.verification_counter = current
+        self.r_index[str(int(current))] = request_id
+
         blob = {
+            "request_id": request_id,
             "claim": local_claim[:500],
             "evidence_url": local_url[:500],
-            "evidence_excerpt": local_evidence[:500],
+            "evidence_hash": evidence_hash,
+            "evidence_excerpt": local_evidence[:800],
             "reasoning": reasoning,
             "minority_note": minority,
             "confidence": confidence,
         }
+        self.r_blob[request_id] = json.dumps(blob)
+        self.r_verdict[request_id] = verdict
+        self.r_disagreement[request_id] = u64(disagreement)
 
-        current = u64(int(self.verification_counter) + 1)
-        self.verification_counter = current
-        verification_id = "verification_" + str(int(current))
+        return request_id
 
-        self.v_blobs[verification_id] = json.dumps(blob)
-        self.v_verdicts[verification_id] = verdict
-        self.v_disagreement[verification_id] = u64(disagreement)
-
-        return verdict
-
-    def _unpack_verification(self, verification_id: str) -> dict:
-        blob_str = str(self.v_blobs[verification_id])
+    def _unpack_verification(self, request_id: str) -> dict:
+        blob_str = str(self.r_blob[request_id])
         try:
             blob = json.loads(blob_str)
         except Exception:
             blob = {}
-
         return {
-            "verification_id": verification_id,
+            "request_id": request_id,
             "claim": str(blob.get("claim", "")),
             "evidence_url": str(blob.get("evidence_url", "")),
+            "evidence_hash": str(blob.get("evidence_hash", "")),
             "evidence_excerpt": str(blob.get("evidence_excerpt", "")),
-            "verdict": str(self.v_verdicts[verification_id]),
+            "verdict": str(self.r_verdict[request_id]),
             "confidence": int(blob.get("confidence", 0)),
             "reasoning": str(blob.get("reasoning", "")),
             "minority_note": str(blob.get("minority_note", "")),
-            "validator_disagreement": int(self.v_disagreement[verification_id]),
+            "validator_disagreement": int(self.r_disagreement[request_id]),
         }
 
     @gl.public.view
-    def get_verification(self, verification_id: str) -> dict:
-        if verification_id not in self.v_blobs:
+    def get_last_request_id(self) -> str:
+        return self.last_request_id
+
+    @gl.public.view
+    def get_verification(self, request_id: str) -> dict:
+        if request_id not in self.r_blob:
             raise gl.vm.UserError("Verification not found")
-        return self._unpack_verification(verification_id)
+        return self._unpack_verification(request_id)
+
+    @gl.public.view
+    def get_request_id_at(self, index: u64) -> str:
+        key = str(int(index))
+        if key not in self.r_index:
+            raise gl.vm.UserError("Index not found")
+        return str(self.r_index[key])
 
     @gl.public.view
     def get_all_verifications(self) -> list:
         result = []
         total = int(self.verification_counter)
         for i in range(total, 0, -1):
-            vid = "verification_" + str(i)
-            if vid in self.v_blobs:
-                result.append(self._unpack_verification(vid))
+            key = str(i)
+            if key in self.r_index:
+                rid = str(self.r_index[key])
+                if rid in self.r_blob:
+                    result.append(self._unpack_verification(rid))
         return result
 
     @gl.public.view

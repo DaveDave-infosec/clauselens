@@ -191,9 +191,10 @@ export async function getAnalysisCount(): Promise<number> {
 }
 
 export interface ContractVerificationResult {
-  verification_id: string
+  request_id: string
   claim: string
   evidence_url: string
+  evidence_hash: string
   evidence_excerpt: string
   verdict: string
   confidence: number
@@ -244,6 +245,34 @@ export async function getVerificationCount(): Promise<number> {
   } catch (err) {
     console.error("getVerificationCount failed:", err)
     return 0
+  }
+}
+
+export async function getLastRequestId(): Promise<string> {
+  try {
+    const result = (await readClient.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "get_last_request_id",
+      args: [],
+    })) as unknown as string
+    return typeof result === "string" ? result : ""
+  } catch (err) {
+    console.error("getLastRequestId failed:", err)
+    return ""
+  }
+}
+
+export async function getRequestIdAt(index: number): Promise<string> {
+  try {
+    const result = (await readClient.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "get_request_id_at",
+      args: [index],
+    })) as unknown as string
+    return typeof result === "string" ? result : ""
+  } catch (err) {
+    console.error("getRequestIdAt failed:", err)
+    return ""
   }
 }
 
