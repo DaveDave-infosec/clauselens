@@ -5,10 +5,7 @@ import { Hero } from "../components/Hero"
 import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
-  getVerificationCount,
-  getVerification,
   getLastRequestId,
-  getRequestIdAt,
   getAllVerifications,
   explorerAddressUrl,
   type ContractVerificationResult,
@@ -119,21 +116,28 @@ export default function Verify() {
     setResult(null)
     setPhase("submitting")
     try {
-      const startCount = await getVerificationCount()
+      const before = await getAllVerifications()
+      const beforeIds = new Set(before.map((r) => r.request_id))
       const startLastId = await getLastRequestId()
       await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
       const longWaitAt = Date.now() + ANALYSIS_LONG_WAIT_MS
-      let rid = ""
+      let found: ContractVerificationResult | null = null
 
       await sleep(ANALYSIS_POLL_INITIAL_MS)
-      while (rid === "" && Date.now() < deadline) {
+      while (!found && Date.now() < deadline) {
         if (Date.now() >= longWaitAt) setPhase("waiting-long")
-        let count = startCount
         try {
-          count = await getVerificationCount()
+          const all = await getAllVerifications()
+          found = all.find((r) => !beforeIds.has(r.request_id)) || null
+          if (!found) {
+            const lastId = await getLastRequestId()
+            if (lastId && lastId !== startLastId) {
+              found = all.find((r) => r.request_id === lastId) || null
+            }
+          }
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message.toLowerCase() : ""
           if (msg.includes("rate limit") || msg.includes("limitexceeded")) {
@@ -141,30 +145,16 @@ export default function Verify() {
             continue
           }
         }
-        const latestId = await getLastRequestId()
-        if (count > startCount) {
-          rid = latestId && latestId !== startLastId ? latestId : await getRequestIdAt(count)
-        } else if (latestId && latestId !== startLastId) {
-          rid = latestId
-        }
-        if (rid === "") await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
+        if (!found) await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
       }
 
-      if (rid === "") {
+      if (!found) {
         throw new Error(
           "Timed out waiting for consensus. The transaction may still complete. Check the recent list or refresh in a few minutes."
         )
       }
 
-      setPhase("fetching")
-      let v: ContractVerificationResult | null = null
-      for (let i = 0; i < 6; i++) {
-        v = await getVerification(rid)
-        if (v) break
-        await sleep(2000)
-      }
-      if (!v) throw new Error("Verification not found after consensus.")
-      setResult(v)
+      setResult(found)
       setPhase("done")
       loadRecent()
     } catch (err: unknown) {
