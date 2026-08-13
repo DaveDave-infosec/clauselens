@@ -118,12 +118,14 @@ export default function Verify() {
     try {
       const before = await getAllVerifications()
       const beforeIds = new Set(before.map((r) => r.request_id))
+      const priorMatch = before.find((r) => r.claim === c && r.evidence_url === u) || null
       const startLastId = await getLastRequestId()
       await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
       const longWaitAt = Date.now() + ANALYSIS_LONG_WAIT_MS
+      const idempotentGraceAt = Date.now() + 35000
       let found: ContractVerificationResult | null = null
 
       await sleep(ANALYSIS_POLL_INITIAL_MS)
@@ -137,6 +139,9 @@ export default function Verify() {
             if (lastId && lastId !== startLastId) {
               found = all.find((r) => r.request_id === lastId) || null
             }
+          }
+          if (!found && priorMatch && Date.now() >= idempotentGraceAt) {
+            found = priorMatch
           }
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message.toLowerCase() : ""
