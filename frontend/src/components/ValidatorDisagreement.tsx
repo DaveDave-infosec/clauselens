@@ -12,28 +12,28 @@ function tierFor(score: number): {
   if (score <= 20) {
     return {
       tier: 0,
-      label: "Strong consensus",
-      description: "Validators reached strong consensus on intent",
+      label: "Clear intent",
+      description: "The model reads the document's intent as clear and unambiguous",
     }
   }
   if (score <= 50) {
     return {
       tier: 1,
-      label: "Partial agreement",
-      description: "Some interpretive disagreement detected — intent is partially ambiguous",
+      label: "Somewhat ambiguous",
+      description: "The model is less certain here, the document's intent is partially ambiguous",
     }
   }
   if (score <= 80) {
     return {
       tier: 2,
-      label: "Significant disagreement",
-      description: "Significant validator disagreement — this document's intent is deliberately unclear",
+      label: "Highly ambiguous",
+      description: "The model reads this document's intent as deliberately unclear",
     }
   }
   return {
     tier: 3,
-    label: "No consensus",
-    description: "Validators could not agree — this document may be intentionally deceptive",
+    label: "Intent unclear",
+    description: "The model could not confidently read the intent, so this document may be intentionally deceptive",
   }
 }
 
@@ -41,7 +41,7 @@ export function ValidatorDisagreement({ score }: ValidatorDisagreementProps) {
   const v = Math.max(0, Math.min(100, Math.round(score)))
   const { tier, label, description } = tierFor(v)
 
-  // 20 segments — segmented bar visual to distinguish from regular score bars
+  // 20 segments, segmented bar visual to distinguish from regular score bars
   const segments = Array.from({ length: 20 }, (_, i) => {
     const segMin = i * 5
     const filled = v > segMin
@@ -53,7 +53,7 @@ export function ValidatorDisagreement({ score }: ValidatorDisagreementProps) {
       <div className="cl-disagree__header">
         <div className="cl-disagree__title-block">
           <span className="cl-disagree__eyebrow">GenLayer Native</span>
-          <h3 className="cl-disagree__title">Validator Disagreement</h3>
+          <h3 className="cl-disagree__title">Intent Ambiguity</h3>
         </div>
         <div className="cl-disagree__value-block">
           <span className="cl-disagree__value mono">{v}</span>
@@ -83,7 +83,7 @@ export function ValidatorDisagreement({ score }: ValidatorDisagreementProps) {
       </div>
 
       <p className="cl-disagree__footnote">
-        Traditional chains cannot surface this. GenLayer validators reason independently — when they diverge on intent, that divergence is itself signal.
+        This score is the model's own confidence about the document's intent, surfaced on-chain and confirmed by GenLayer validator consensus. It is not a measurement of how much validators diverged. Measuring real cross-validator divergence is a planned upgrade.
       </p>
     </div>
   )

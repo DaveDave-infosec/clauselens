@@ -169,7 +169,7 @@ export function RecentAnalyses({
                           </span>
                         </span>
                         <span className="cl-feed-card__metric">
-                          <span className="cl-feed-card__metric-label">Disagreement</span>
+                          <span className="cl-feed-card__metric-label">Ambiguity</span>
                           <span className="cl-feed-card__metric-value mono">
                             {a.validator_disagreement}
                           </span>

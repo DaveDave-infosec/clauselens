@@ -41,7 +41,7 @@ export function Hero() {
               {animatedConsensus}
               <span className="cl-stat__suffix">%</span>
             </span>
-            <span className="cl-stat__label">Validator consensus</span>
+            <span className="cl-stat__label">Model confidence</span>
           </div>
         </div>
       </div>

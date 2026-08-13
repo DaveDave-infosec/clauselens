@@ -268,16 +268,20 @@ export default function Verify() {
                 <div style={{ background: vStyle.bg, padding: "18px 22px", display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
                   <span style={{ color: vStyle.fg, fontSize: 22, fontWeight: 700, letterSpacing: 0.3 }}>{vStyle.label}</span>
                   <span style={{ marginLeft: "auto", fontSize: 13, opacity: 0.8 }}>
-                    Confidence {result.confidence}% · Validator disagreement {result.validator_disagreement}%
+                    Model confidence {result.confidence}%
                   </span>
                 </div>
                 <div style={{ padding: 22, background: "rgba(255,255,255,0.03)" }}>
                   <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>Consensus reasoning</div>
                   <p style={{ margin: "0 0 16px", fontSize: 15, lineHeight: 1.55 }}>{result.reasoning || "No reasoning returned."}</p>
 
+                  <p style={{ fontSize: 12, opacity: 0.55, margin: "0 0 16px" }}>
+                    How to read this: the verdict is the consensus outcome. The confidence and the counter-argument below are the model's own self-assessment, not measured from separate validators. Measuring real cross-validator disagreement is a planned upgrade.
+                  </p>
+
                   {result.minority_note && result.minority_note.trim() !== "" && (
                     <div style={{ borderLeft: "3px solid #fbbf24", background: "rgba(251,191,36,0.08)", padding: "12px 14px", borderRadius: 8, marginBottom: 16 }}>
-                      <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, color: "#fbbf24", marginBottom: 4 }}>Minority view</div>
+                      <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, color: "#fbbf24", marginBottom: 4 }}>Counter-argument (model-generated)</div>
                       <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.92 }}>{result.minority_note}</p>
                     </div>
                   )}

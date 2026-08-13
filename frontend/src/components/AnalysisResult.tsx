@@ -54,7 +54,7 @@ export function AnalysisResult({ analysis, currentWallet }: AnalysisResultProps)
       "",
       `Risk: ${risk.toUpperCase()}`,
       `Manipulation: ${manip}/100`,
-      `Validator disagreement: ${disagree}/100`,
+      `Intent ambiguity: ${disagree}/100`,
       "",
       summary ? `"${summary}"` : "",
       "",
