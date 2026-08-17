@@ -6,6 +6,7 @@ import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
   computeRequestId,
+  logTransactionRaw,
   getVerification,
   getAllVerifications,
   explorerAddressUrl,
@@ -123,7 +124,7 @@ export default function Verify() {
       } catch {
         throw new Error("Could not read the evidence URL from the browser to bind the receipt. Use a public URL that allows cross-origin requests.")
       }
-      await verifyClaim(c, u, wallet.address)
+      const txHash = await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
@@ -146,6 +147,11 @@ export default function Verify() {
       setResult(found)
       setPhase("done")
       loadRecent()
+      try {
+        await logTransactionRaw(txHash)
+      } catch (e) {
+        console.log("CLAUSELENS tx log error:", e)
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.")
       setPhase("error")

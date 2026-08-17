@@ -243,6 +243,34 @@ export async function computeRequestId(claim: string, evidenceUrl: string): Prom
 }
 
 
+export async function logTransactionRaw(txHash: unknown): Promise<void> {
+  const anyClient = readClient as any
+  const hash =
+    txHash && typeof txHash === "object" && "hash" in (txHash as Record<string, unknown>)
+      ? (txHash as Record<string, unknown>).hash
+      : txHash
+  const seen: string[] = []
+  const walk = (o: unknown, p: string): void => {
+    if (seen.length > 60) return
+    if (typeof o === "string") {
+      if (/[0-9a-f]{64}/.test(o)) seen.push(p + " = " + o.slice(0, 80))
+    } else if (o && typeof o === "object") {
+      for (const k of Object.keys(o as Record<string, unknown>)) {
+        walk((o as Record<string, unknown>)[k], p ? p + "." + k : k)
+      }
+    }
+  }
+  try {
+    const tx = await anyClient.getTransaction({ hash })
+    console.log("CLAUSELENS_TX_TOPKEYS", Object.keys(tx || {}))
+    walk(tx, "")
+    console.log("CLAUSELENS_TX_HEX64_PATHS", seen)
+  } catch (e) {
+    console.log("CLAUSELENS_TX_ERR", e)
+  }
+}
+
+
 export async function getVerification(
   verificationId: string
 ): Promise<ContractVerificationResult | null> {
