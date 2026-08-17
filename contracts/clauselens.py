@@ -26,7 +26,7 @@ class ClauseLens(gl.Contract):
     last_request_id: str
     r_index: TreeMap[str, str]
     r_verdict: TreeMap[str, str]
-    r_disagreement: TreeMap[str, u64]
+    r_uncertainty: TreeMap[str, u64]
     r_blob: TreeMap[str, str]
 
     def __init__(self):
@@ -207,7 +207,7 @@ class ClauseLens(gl.Contract):
                 "JSON object, no markdown, no preamble, with keys: verdict (one of "
                 "SUPPORTED, CONTRADICTED, NOT_ADDRESSED, INSUFFICIENT), confidence "
                 "(0-100 integer), reasoning (1-2 sentences grounded in the actual "
-                "evidence text), minority_note (one sentence giving the strongest "
+                "evidence text), counter_argument (one sentence giving the strongest "
                 "good-faith case for a different verdict, or an empty string). Use "
                 "NOT_ADDRESSED if the evidence does not speak to the claim, and "
                 "INSUFFICIENT if the evidence is empty or unreadable."
@@ -220,7 +220,7 @@ class ClauseLens(gl.Contract):
         )
         criteria_check = (
             "The response is exactly one valid JSON object with keys verdict, "
-            "confidence, reasoning, minority_note. verdict is one of SUPPORTED, "
+            "confidence, reasoning, counter_argument. verdict is one of SUPPORTED, "
             "CONTRADICTED, NOT_ADDRESSED, INSUFFICIENT. confidence is an integer "
             "0-100. reasoning is a non-empty string grounded in the actual evidence "
             "text, not outside knowledge."
@@ -235,9 +235,9 @@ class ClauseLens(gl.Contract):
 
         verdict = str(parsed.get("verdict", "INSUFFICIENT"))
         confidence = max(0, min(100, int(parsed.get("confidence", 0))))
-        disagreement = max(0, min(100, 100 - confidence))
+        uncertainty = max(0, min(100, 100 - confidence))
         reasoning = str(parsed.get("reasoning", ""))
-        minority = str(parsed.get("minority_note", ""))
+        counter_argument = str(parsed.get("counter_argument", ""))
 
         current = u64(int(self.verification_counter) + 1)
         self.verification_counter = current
@@ -250,12 +250,12 @@ class ClauseLens(gl.Contract):
             "evidence_hash": evidence_hash,
             "evidence_excerpt": local_evidence[:800],
             "reasoning": reasoning,
-            "minority_note": minority,
-            "confidence": confidence,
+            "model_counter_argument": counter_argument,
+            "model_confidence": confidence,
         }
         self.r_blob[request_id] = json.dumps(blob)
         self.r_verdict[request_id] = verdict
-        self.r_disagreement[request_id] = u64(disagreement)
+        self.r_uncertainty[request_id] = u64(uncertainty)
 
         return request_id
 
@@ -272,10 +272,10 @@ class ClauseLens(gl.Contract):
             "evidence_hash": str(blob.get("evidence_hash", "")),
             "evidence_excerpt": str(blob.get("evidence_excerpt", "")),
             "verdict": str(self.r_verdict[request_id]),
-            "confidence": int(blob.get("confidence", 0)),
+            "model_confidence": int(blob.get("model_confidence", 0)),
             "reasoning": str(blob.get("reasoning", "")),
-            "minority_note": str(blob.get("minority_note", "")),
-            "validator_disagreement": int(self.r_disagreement[request_id]),
+            "model_counter_argument": str(blob.get("model_counter_argument", "")),
+            "model_uncertainty": int(self.r_uncertainty[request_id]),
         }
 
     @gl.public.view
