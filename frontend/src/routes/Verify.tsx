@@ -5,8 +5,7 @@ import { Hero } from "../components/Hero"
 import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
-  computeRequestId,
-  logTransactionRaw,
+  getReturnedRequestId,
   getVerification,
   getAllVerifications,
   explorerAddressUrl,
@@ -118,40 +117,46 @@ export default function Verify() {
     setResult(null)
     setPhase("submitting")
     try {
-      let requestId = ""
-      try {
-        requestId = await computeRequestId(c, u)
-      } catch {
-        throw new Error("Could not read the evidence URL from the browser to bind the receipt. Use a public URL that allows cross-origin requests.")
-      }
       const txHash = await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
       const longWaitAt = Date.now() + ANALYSIS_LONG_WAIT_MS
-      let found: ContractVerificationResult | null = null
 
+      // Read the request_id THIS transaction returned (its own receipt), then
+      // fetch exactly that record. No feed scan, no claim/url matching.
+      let requestId = ""
       await sleep(ANALYSIS_POLL_INITIAL_MS)
-      while (!found && Date.now() < deadline) {
+      while (!requestId && Date.now() < deadline) {
         if (Date.now() >= longWaitAt) setPhase("waiting-long")
+        try {
+          requestId = await getReturnedRequestId(txHash)
+        } catch {
+          // transient (still finalizing or throttled) — keep polling
+        }
+        if (!requestId) await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
+      }
+
+      if (!requestId) {
+        throw new Error(
+          "Timed out waiting for the transaction receipt. The verification may still complete; refresh in a few minutes."
+        )
+      }
+
+      setPhase("fetching")
+      let found: ContractVerificationResult | null = null
+      for (let i = 0; i < 10 && !found; i++) {
         found = await getVerification(requestId)
-        if (!found) await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
+        if (!found) await sleep(2000)
       }
 
       if (!found) {
-        throw new Error(
-          "Timed out waiting for consensus. The transaction may still complete; refresh in a few minutes."
-        )
+        throw new Error("Verification not found after consensus.")
       }
 
       setResult(found)
       setPhase("done")
       loadRecent()
-      try {
-        await logTransactionRaw(txHash)
-      } catch (e) {
-        console.log("CLAUSELENS tx log error:", e)
-      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.")
       setPhase("error")
