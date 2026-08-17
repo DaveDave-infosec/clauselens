@@ -5,6 +5,7 @@ import { Hero } from "../components/Hero"
 import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
+  waitForReceiptRaw,
   getLastRequestId,
   getAllVerifications,
   explorerAddressUrl,
@@ -120,7 +121,12 @@ export default function Verify() {
       const beforeIds = new Set(before.map((r) => r.request_id))
       const priorMatch = before.find((r) => r.claim === c && r.evidence_url === u) || null
       const startLastId = await getLastRequestId()
-      await verifyClaim(c, u, wallet.address)
+      const txHash = await verifyClaim(c, u, wallet.address)
+      try {
+        await waitForReceiptRaw(txHash)
+      } catch (e) {
+        console.log("CLAUSELENS receipt wait error:", e)
+      }
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
@@ -263,7 +269,7 @@ export default function Verify() {
                 <div style={{ background: vStyle.bg, padding: "18px 22px", display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
                   <span style={{ color: vStyle.fg, fontSize: 22, fontWeight: 700, letterSpacing: 0.3 }}>{vStyle.label}</span>
                   <span style={{ marginLeft: "auto", fontSize: 13, opacity: 0.8 }}>
-                    Model confidence {result.confidence}%
+                    Model confidence {result.model_confidence}%
                   </span>
                 </div>
                 <div style={{ padding: 22, background: "rgba(255,255,255,0.03)" }}>
@@ -274,10 +280,10 @@ export default function Verify() {
                     How to read this: the verdict is the consensus outcome. The confidence and the counter-argument below are the model's own self-assessment, not measured from separate validators. Measuring real cross-validator disagreement is a planned upgrade.
                   </p>
 
-                  {result.minority_note && result.minority_note.trim() !== "" && (
+                  {result.model_counter_argument && result.model_counter_argument.trim() !== "" && (
                     <div style={{ borderLeft: "3px solid #fbbf24", background: "rgba(251,191,36,0.08)", padding: "12px 14px", borderRadius: 8, marginBottom: 16 }}>
                       <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, color: "#fbbf24", marginBottom: 4 }}>Counter-argument (model-generated)</div>
-                      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.92 }}>{result.minority_note}</p>
+                      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.92 }}>{result.model_counter_argument}</p>
                     </div>
                   )}
 
@@ -329,7 +335,7 @@ export default function Verify() {
                     <div key={r.request_id} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", background: "rgba(255,255,255,0.02)" }}>
                       <span style={{ color: s.fg, fontWeight: 600, fontSize: 13, minWidth: 92 }}>{s.label}</span>
                       <span style={{ flex: 1, fontSize: 13, opacity: 0.85, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.claim}</span>
-                      <span style={{ fontSize: 12, opacity: 0.55 }}>{r.confidence}%</span>
+                      <span style={{ fontSize: 12, opacity: 0.55 }}>{r.model_confidence}%</span>
                     </div>
                   )
                 })}

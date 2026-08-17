@@ -197,10 +197,10 @@ export interface ContractVerificationResult {
   evidence_hash: string
   evidence_excerpt: string
   verdict: string
-  confidence: number
+  model_confidence: number
   reasoning: string
-  minority_note: string
-  validator_disagreement: number
+  model_counter_argument: string
+  model_uncertainty: number
 }
 
 export async function verifyClaim(
@@ -217,6 +217,30 @@ export async function verifyClaim(
     gas: BigInt(12000000),
   })
 }
+
+export async function waitForReceiptRaw(txHash: unknown): Promise<unknown> {
+  const anyClient = readClient as any
+  const hash =
+    txHash && typeof txHash === "object" && "hash" in (txHash as Record<string, unknown>)
+      ? (txHash as Record<string, unknown>).hash
+      : txHash
+  const receipt = await anyClient.waitForTransactionReceipt({
+    hash,
+    status: "FINALIZED",
+    retries: 300,
+    interval: 3000,
+  })
+  try {
+    console.log("CLAUSELENS_RECEIPT_TOPKEYS", Object.keys(receipt || {}))
+    const s = JSON.stringify(receipt)
+    console.log("CLAUSELENS_RECEIPT_HEX64", Array.from(new Set(s.match(/[0-9a-f]{64}/g) || [])))
+    console.log("CLAUSELENS_RECEIPT_JSON", s)
+  } catch (e) {
+    console.log("CLAUSELENS_RECEIPT_STRINGIFY_ERR", e)
+  }
+  return receipt
+}
+
 
 export async function getVerification(
   verificationId: string

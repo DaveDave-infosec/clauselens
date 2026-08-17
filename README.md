@@ -23,9 +23,20 @@ Each analysis produces:
 - **Hidden risk level** — Low / Medium / High / Critical
 - **Human-readable explanation** — what the document actually means, in plain English
 - **Danger flags** — specific quotes from the document paired with why they're concerning
-- **Validator disagreement** (0-100) — a GenLayer-native signal. When validators diverge on intent, that divergence is itself information
+- **Intent ambiguity** (0-100): the model's own confidence about how clear the document's intent is, surfaced on-chain via consensus. It is the model's self-assessment, not a measurement of how much validators diverged
 
-The killer feature is validator disagreement. A predatory ToS produces strong consensus (manipulation is obvious). An ambiguous whitepaper produces measurable disagreement (interpretation is subjective). The disagreement value is a signal traditional chains cannot surface.
+Intent ambiguity is a distinctive signal. A predatory ToS reads as clear intent (the manipulation is obvious). An ambiguous whitepaper reads as high ambiguity (the intent is genuinely subjective). This value is the model's self-assessed confidence about intent, run through GenLayer consensus rather than taken from a single call. It is not a measurement of validator-to-validator divergence.
+
+### External-evidence verification (V3)
+
+Beyond analyzing a document in isolation, ClauseLens can verify a claim against a live external source. The contract fetches the evidence URL itself, then independent validators read whether the evidence supports the claim and reach consensus on a verdict (Supported, Contradicted, Not addressed, or Insufficient).
+
+Each verification produces a content-addressed receipt:
+- **request_id**: sha256 of the claim, the URL, and the evidence hash. Identical inputs return the same receipt (idempotent).
+- **evidence_hash**: sha256 of the exact fetched evidence, so a receipt provably binds to what was read.
+- **model_confidence** (0-100): the model's self-reported confidence in the verdict.
+- **model_uncertainty** (0-100): 100 minus that confidence. It is the model's self-assessment, not measured validator divergence.
+- **model_counter_argument**: a one-sentence, model-generated case for a different verdict.
 
 ---
 
