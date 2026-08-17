@@ -218,21 +218,28 @@ export async function verifyClaim(
   })
 }
 
-export async function logTransactionRaw(txHash: unknown): Promise<void> {
-  const anyClient = readClient as any
-  const hash =
-    txHash && typeof txHash === "object" && "hash" in (txHash as Record<string, unknown>)
-      ? (txHash as Record<string, unknown>).hash
-      : txHash
-  const tx = await anyClient.getTransaction({ hash })
-  try {
-    console.log("CLAUSELENS_RECEIPT_TOPKEYS", Object.keys(tx || {}))
-    const s = JSON.stringify(tx)
-    console.log("CLAUSELENS_RECEIPT_HEX64", Array.from(new Set(s.match(/[0-9a-f]{64}/g) || [])))
-    console.log("CLAUSELENS_RECEIPT_JSON", s)
-  } catch (e) {
-    console.log("CLAUSELENS_RECEIPT_STRINGIFY_ERR", e)
-  }
+async function sha256Hex(data: string): Promise<string> {
+  const bytes = new TextEncoder().encode(data)
+  const buf = await crypto.subtle.digest("SHA-256", bytes as unknown as BufferSource)
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+
+// Recompute the exact content-addressed request_id the contract derives:
+// sha256(claim \x00 url \x00 sha256(fetched evidence truncated to 6000 chars)).
+// Lets the client bind to the exact receipt its own submission creates and
+// fetch only that record, instead of scanning the public feed.
+export async function computeRequestId(claim: string, evidenceUrl: string): Promise<string> {
+  const c = claim.trim()
+  const u = evidenceUrl.trim()
+  const resp = await fetch(u)
+  let text = await resp.text()
+  if (text.length > 6000) text = text.slice(0, 6000)
+  const evidenceHash = await sha256Hex(text)
+  const material = c + "\u0000" + u + "\u0000" + evidenceHash
+  return await sha256Hex(material)
 }
 
 

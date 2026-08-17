@@ -5,8 +5,8 @@ import { Hero } from "../components/Hero"
 import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
-  logTransactionRaw,
-  getLastRequestId,
+  computeRequestId,
+  getVerification,
   getAllVerifications,
   explorerAddressUrl,
   type ContractVerificationResult,
@@ -117,57 +117,35 @@ export default function Verify() {
     setResult(null)
     setPhase("submitting")
     try {
-      const before = await getAllVerifications()
-      const beforeIds = new Set(before.map((r) => r.request_id))
-      const priorMatch = before.find((r) => r.claim === c && r.evidence_url === u) || null
-      const startLastId = await getLastRequestId()
-      const txHash = await verifyClaim(c, u, wallet.address)
+      let requestId = ""
+      try {
+        requestId = await computeRequestId(c, u)
+      } catch {
+        throw new Error("Could not read the evidence URL from the browser to bind the receipt. Use a public URL that allows cross-origin requests.")
+      }
+      await verifyClaim(c, u, wallet.address)
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
       const longWaitAt = Date.now() + ANALYSIS_LONG_WAIT_MS
-      const idempotentGraceAt = Date.now() + 35000
       let found: ContractVerificationResult | null = null
 
       await sleep(ANALYSIS_POLL_INITIAL_MS)
       while (!found && Date.now() < deadline) {
         if (Date.now() >= longWaitAt) setPhase("waiting-long")
-        try {
-          const all = await getAllVerifications()
-          found = all.find((r) => !beforeIds.has(r.request_id)) || null
-          if (!found) {
-            const lastId = await getLastRequestId()
-            if (lastId && lastId !== startLastId) {
-              found = all.find((r) => r.request_id === lastId) || null
-            }
-          }
-          if (!found && priorMatch && Date.now() >= idempotentGraceAt) {
-            found = priorMatch
-          }
-        } catch (err: unknown) {
-          const msg = err instanceof Error ? err.message.toLowerCase() : ""
-          if (msg.includes("rate limit") || msg.includes("limitexceeded")) {
-            await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS * 2)
-            continue
-          }
-        }
+        found = await getVerification(requestId)
         if (!found) await sleep(ANALYSIS_POLL_INTERVAL_PROGRESSIVE_MS)
       }
 
       if (!found) {
         throw new Error(
-          "Timed out waiting for consensus. The transaction may still complete. Check the recent list or refresh in a few minutes."
+          "Timed out waiting for consensus. The transaction may still complete; refresh in a few minutes."
         )
       }
 
       setResult(found)
       setPhase("done")
       loadRecent()
-      try {
-        await logTransactionRaw(txHash)
-      } catch (e) {
-        console.log("CLAUSELENS tx fetch error:", e)
-      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.")
       setPhase("error")
