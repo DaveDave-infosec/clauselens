@@ -1,14 +1,25 @@
 import { ValidatorCluster } from "./ValidatorCluster"
 import { useCountUp } from "../hooks/useCountUp"
-import { useAnalysisStats } from "../hooks/useAnalysisStats"
+import { useHeroStats } from "../hooks/useHeroStats"
 import "./Hero.css"
 
-export function Hero() {
-  const stats = useAnalysisStats()
+
+interface HeroProps {
+  variant?: "analyze" | "verify"
+}
+
+
+export function Hero({ variant = "analyze" }: HeroProps) {
+  const stats = useHeroStats(variant)
+
 
   const animatedCount = useCountUp({ target: stats.count, durationMs: 1400 })
-  const animatedManip = useCountUp({ target: stats.avgManipulation, durationMs: 1400 })
-  const animatedConsensus = useCountUp({ target: stats.consensusRate, durationMs: 1400 })
+  const animatedMid = useCountUp({ target: stats.mid, durationMs: 1400 })
+  const animatedRight = useCountUp({ target: stats.right, durationMs: 1400 })
+
+
+  const isVerify = variant === "verify"
+
 
   return (
     <section className="cl-hero">
@@ -27,18 +38,18 @@ export function Hero() {
         <div className="cl-hero__stats">
           <div className="cl-stat">
             <span className="cl-stat__value mono">{animatedCount}</span>
-            <span className="cl-stat__label">Documents analyzed</span>
+            <span className="cl-stat__label">{isVerify ? "Claims verified" : "Documents analyzed"}</span>
           </div>
           <div className="cl-stat">
             <span className="cl-stat__value mono">
-              {animatedManip}
-              <span className="cl-stat__suffix">/100</span>
+              {animatedMid}
+              {!isVerify && <span className="cl-stat__suffix">/100</span>}
             </span>
-            <span className="cl-stat__label">Avg manipulation</span>
+            <span className="cl-stat__label">{isVerify ? "Supported" : "Avg manipulation"}</span>
           </div>
           <div className="cl-stat">
             <span className="cl-stat__value mono">
-              {animatedConsensus}
+              {animatedRight}
               <span className="cl-stat__suffix">%</span>
             </span>
             <span className="cl-stat__label">Model confidence</span>

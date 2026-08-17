@@ -177,7 +177,7 @@ export default function Verify() {
         <Header wallet={wallet} />
 
         <main className="app-main">
-          <Hero />
+          <Hero variant="verify" />
 
           {errorBanner && (
             <div className="cl-banner cl-banner--error fade-in">
