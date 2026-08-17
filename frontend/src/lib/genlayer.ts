@@ -218,27 +218,21 @@ export async function verifyClaim(
   })
 }
 
-export async function waitForReceiptRaw(txHash: unknown): Promise<unknown> {
+export async function logTransactionRaw(txHash: unknown): Promise<void> {
   const anyClient = readClient as any
   const hash =
     txHash && typeof txHash === "object" && "hash" in (txHash as Record<string, unknown>)
       ? (txHash as Record<string, unknown>).hash
       : txHash
-  const receipt = await anyClient.waitForTransactionReceipt({
-    hash,
-    status: "FINALIZED",
-    retries: 300,
-    interval: 3000,
-  })
+  const tx = await anyClient.getTransaction({ hash })
   try {
-    console.log("CLAUSELENS_RECEIPT_TOPKEYS", Object.keys(receipt || {}))
-    const s = JSON.stringify(receipt)
+    console.log("CLAUSELENS_RECEIPT_TOPKEYS", Object.keys(tx || {}))
+    const s = JSON.stringify(tx)
     console.log("CLAUSELENS_RECEIPT_HEX64", Array.from(new Set(s.match(/[0-9a-f]{64}/g) || [])))
     console.log("CLAUSELENS_RECEIPT_JSON", s)
   } catch (e) {
     console.log("CLAUSELENS_RECEIPT_STRINGIFY_ERR", e)
   }
-  return receipt
 }
 
 

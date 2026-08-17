@@ -5,7 +5,7 @@ import { Hero } from "../components/Hero"
 import { useWallet } from "../hooks/useWallet"
 import {
   verifyClaim,
-  waitForReceiptRaw,
+  logTransactionRaw,
   getLastRequestId,
   getAllVerifications,
   explorerAddressUrl,
@@ -122,11 +122,6 @@ export default function Verify() {
       const priorMatch = before.find((r) => r.claim === c && r.evidence_url === u) || null
       const startLastId = await getLastRequestId()
       const txHash = await verifyClaim(c, u, wallet.address)
-      try {
-        await waitForReceiptRaw(txHash)
-      } catch (e) {
-        console.log("CLAUSELENS receipt wait error:", e)
-      }
 
       setPhase("waiting")
       const deadline = Date.now() + ANALYSIS_TIMEOUT_MS
@@ -168,6 +163,11 @@ export default function Verify() {
       setResult(found)
       setPhase("done")
       loadRecent()
+      try {
+        await logTransactionRaw(txHash)
+      } catch (e) {
+        console.log("CLAUSELENS tx fetch error:", e)
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.")
       setPhase("error")
